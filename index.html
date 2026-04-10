@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First Principles — Deep Dive Blog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0b;
+      --bg-secondary: #141416;
+      --bg-tertiary: #1c1c1f;
+      --border-color: #2a2a2e;
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --accent: #faf089;
+      --accent-secondary: #facc15;
+      --radius: 6px;
+      --transition: 0.2s ease;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    header {
+      background: rgba(10, 10, 11, 0.8);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .logo-icon {
+      font-size: 1.4rem;
+      color: var(--accent);
+    }
+    .logo-text {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+    .nav-links a {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 24px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 64px;
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .section-header h2 {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 36px;
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .filter-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg-primary);
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .post-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+      position: relative;
+    }
+    .post-card::after {
+      content: '→';
+      position: absolute;
+      right: 24px;
+      bottom: 28px;
+      font-size: 1.25rem;
+      color: var(--accent);
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: var(--transition);
+    }
+    .post-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .post-card:hover::after {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .post-card .category {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      width: fit-content;
+      margin-bottom: 16px;
+      font-family: 'Space Mono', monospace;
+    }
+    .post-card h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .post-card .excerpt {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex-grow: 1;
+    }
+    .post-card .meta {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.875rem; }
+      .posts-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="./index.html" class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">First Principles</span>
+      </a>
+      <nav class="nav-links">
+        <a href="https://github.com/TriBien" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="hero-tag">◈ Must Understand Deeply</div>
+      <h1>Question everything.<br><span class="highlight">Build from first principles.</span></h1>
+      <p>Technical exploration through the lens of fundamentals — not trending, but true.</p>
+    </div>
+
+    <div class="section-header">
+      <h2>All Posts</h2>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="posts-grid" id="grid"></div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="posts.js"></script>
+  <script>
+    const posts = window.POSTS || [];
+    const filtersEl = document.getElementById('filters');
+    const gridEl = document.getElementById('grid');
+    let currentCategory = 'all';
+
+    const categories = ['all', ...new Set(posts.map(p => p.category))];
+
+    function renderFilters() {
+      filtersEl.innerHTML = categories.map(c => 
+        `<button class="filter-btn ${c === currentCategory ? 'active' : ''}" data-category="${c}">${c === 'all' ? 'All' : c}</button>`
+      ).join('');
+    }
+
+    function renderGrid() {
+      const filtered = currentCategory === 'all' ? posts : posts.filter(p => p.category === currentCategory);
+      
+      if (filtered.length === 0) {
+        gridEl.innerHTML = '<div class="empty-state">No posts found</div>';
+        return;
+      }
+
+      gridEl.innerHTML = filtered.map(post => `
+        <a href="${post.url}" class="post-card">
+          <span class="category">${post.category}</span>
+          <h2>${post.title}</h2>
+          <p class="excerpt">${post.excerpt || ''}</p>
+          <div class="meta">${post.date}</div>
+        </a>
+      `).join('');
+    }
+
+    filtersEl.addEventListener('click', (e) => {
+      if (e.target.classList.contains('filter-btn')) {
+        currentCategory = e.target.dataset.category;
+        renderFilters();
+        renderGrid();
+      }
+    });
+
+    // renderFilters();
+    renderGrid();
+  </script>
+</body>
+</html>
