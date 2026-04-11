@@ -5,10 +5,15 @@ OUTPUT_FILE="posts.js"
 
 echo "Scanning posts..."
 
+convert_to_title() {
+  echo "$1" | sed -e 's/-/ /g' | awk '{ for (i=1; i<=NF; i++) $i = toupper(substr($i,1,1)) tolower(substr($i,2)); } OFS=" " $0'
+}
+
 generate_post_json() {
   local file=$1
   local category=$(basename "$(dirname "$file")")
-  local title=$(basename "$file" .html)
+  local filename=$(basename "$file" .html)
+  local title=$(convert_to_title "$filename")
   local url="$file"
   local date=$(date +%Y-%m-%d -r "$file" 2>/dev/null || date +%Y-%m-%d)
   local excerpt=$(sed -n 's/.*<p[^>]*>\([^<]*\).*/\1/p; s/.*<p>\([^<]*\).*/\1/p' "$file" 2>/dev/null | head -1 | head -c 150)
@@ -56,7 +61,8 @@ for cat in contents/*/; do
   echo "" >> README.md
   for post in "$cat"*.html; do
     if [ -f "$post" ]; then
-      title=$(basename "$post" .html)
+      filename=$(basename "$post" .html)
+      title=$(convert_to_title "$filename")
       echo "- [$title]($post)" >> README.md
     fi
   done
