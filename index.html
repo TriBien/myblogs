@@ -368,13 +368,19 @@
       }
     });
 
+    const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/') || '/';
+    
+    function makeUrl(relativeUrl) {
+      if (relativeUrl.startsWith('/') || relativeUrl.startsWith('http')) {
+        return relativeUrl;
+      }
+      return basePath + relativeUrl;
+    }
+
     async function loadPost(url) {
       try {
-        let absoluteUrl = url;
-        if (!url.startsWith('/') && !url.startsWith('http')) {
-          absoluteUrl = '/' + url.replace(/^\.\//, '');
-        }
-        const response = await fetch(absoluteUrl);
+        const fullUrl = makeUrl(url);
+        const response = await fetch(fullUrl);
         const html = await response.text();
         mainEl.innerHTML = html;
         window.scrollTo(0, 0);
@@ -391,7 +397,7 @@
           e.preventDefault();
           let url = link.dataset.postUrl;
           if (!url.startsWith('/')) {
-            url = '/' + url;
+            url = basePath + url;
           }
           history.pushState(null, '', url);
           loadPost(url);
@@ -401,7 +407,7 @@
       document.querySelectorAll('.back-link').forEach(link => {
         link.addEventListener('click', (e) => {
           e.preventDefault();
-          history.pushState(null, '', '/');
+          history.pushState(null, '', basePath);
           renderHome();
         });
       });
@@ -454,7 +460,7 @@
 
     window.addEventListener('popstate', () => {
       const path = window.location.pathname;
-      if (path === '/' || path === '/index.html') {
+      if (path === basePath || path === basePath + 'index.html') {
         renderHome();
       } else if (path.includes('/contents/') && path.endsWith('.html')) {
         loadPost(path);
@@ -467,7 +473,7 @@
         e.preventDefault();
         let url = link.dataset.postUrl;
         if (!url.startsWith('/')) {
-          url = '/' + url;
+          url = basePath + url;
         }
         history.pushState(null, '', url);
         loadPost(url);
@@ -478,10 +484,10 @@
     const params = new URLSearchParams(window.location.search);
     const postParam = params.get('post');
     
-    if (path.endsWith('.html') && !path.includes('/contents/')) {
+    if (path.endsWith('.html') && path.includes('/contents/')) {
       loadPost(path);
     } else if (postParam) {
-      loadPost('/' + postParam);
+      loadPost(basePath + postParam);
     } else {
       renderHome();
     }
