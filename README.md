@@ -13,10 +13,11 @@ We believe that deep understanding comes from breaking things down to fundamenta
 
 ### Life
 
-- [my-first-post](contents/Life/my-first-post.html)
+- [My First Post](contents/Life/my-first-post.html)
 
 ### Tech
 
-- [hello-world](contents/Tech/hello-world.html)
+- [Hello World](contents/Tech/hello-world.html)
+- [React Stack Reconciler](contents/Tech/react-stack-reconciler.html)
 
 ---

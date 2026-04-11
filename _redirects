@@ -1,0 +1,4 @@
+# For GitHub Pages SPA support - redirect all HTML requests to index.html
+# This is handled via 404.html fallback
+
+/*    /index.html   200

@@ -1,40 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello World — First Principles</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../header.css">
-  <link rel="stylesheet" href="../post.css">
-</head>
-<body>
-  <main>
-    <a href="../../index.html" class="back-link">← Back to all posts</a>
-    
-    <div class="post-header">
-      <span class="category">Tech</span>
-      <h1>Hello World</h1>
-      <div class="meta"><span>2026-04-10</span></div>
-    </div>
+<script>
+if (!document.querySelector('style')) {
+  window.location.href = './index.html?post=contents/Tech/hello-world.html';
+}
+</script>
+<main>
+  <a href="./index.html" class="back-link">← Back to all posts</a>
+  
+  <div class="post-header">
+    <span class="category">Tech</span>
+    <h1>Hello World</h1>
+    <div class="meta"><span>2026-04-10</span></div>
+  </div>
 
-    <div class="content">
-      <p>Welcome to First Principles — a blog dedicated to understanding technology from the ground up.</p>
-      <p>The name says it all: we believe that true understanding comes from breaking things down to their fundamental principles, not following trends or copying patterns without comprehension.</p>
-      <h2>What to expect</h2>
-      <ul>
-        <li>Deep dives into how things actually work</li>
-        <li>Code that explains the why, not just the how</li>
-        <li>Questioning accepted wisdom in software engineering</li>
-      </ul>
-      <p>This is the first post in what I hope becomes a thoughtful exploration of technology.</p>
-    </div>
-  </main>
+  <div class="content">
+    <p>Welcome to First Principles — a blog dedicated to understanding technology from the ground up.</p>
+    <p>The name says it all: we believe that true understanding comes from breaking things down to their fundamental principles, not following trends or copying patterns without comprehension.</p>
+    <h2>What to expect</h2>
+    <ul>
+      <li>Deep dives into how things actually work</li>
+      <li>Code that explains the why, not just the how</li>
+      <li>Questioning accepted wisdom in software engineering</li>
+    </ul>
+    <p>This is the first post in what I hope becomes a thoughtful exploration of technology.</p>
+  </div>
+</main>
 
-  <footer>
-    <p>First Principles © 2026</p>
-  </footer>
-</body>
-</html>
+<style>
+  main { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
+  .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 32px; transition: var(--transition); }
+  .back-link:hover { color: var(--accent); }
+  .post-header { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); }
+  .post-header .category { display: inline-flex; align-items: center; padding: 4px 10px; background: var(--bg-tertiary); border-radius: 4px; font-size: 0.6875rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; font-family: 'Space Mono', monospace; }
+  .post-header h1 { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 12px; }
+  .post-header .meta { font-size: 0.8125rem; color: var(--text-muted); font-family: 'Space Mono', monospace; }
+  .content { font-size: 1.0625rem; line-height: 1.75; }
+  .content h2 { font-size: 1.5rem; font-weight: 600; margin: 2rem 0 1rem; }
+  .content p { margin-bottom: 1.25rem; color: var(--text-secondary); }
+  .content ul { margin: 1rem 0 1.5rem; padding-left: 1.5rem; }
+  .content li { margin-bottom: 0.5rem; color: var(--text-secondary); }
+</style>
