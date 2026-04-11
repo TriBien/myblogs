@@ -300,7 +300,7 @@
 <body>
   <header>
     <div class="header-inner">
-      <a href="/" class="logo">
+      <a href="#" class="logo" data-base-path>
         <span class="logo-icon">◈</span>
         <span class="logo-text">First Principles</span>
       </a>
@@ -368,11 +368,16 @@
       }
     });
 
-    const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/') || '/';
+    const basePath = window.location.pathname.endsWith('/') 
+      ? window.location.pathname 
+      : window.location.pathname.replace(/\/[^\/]*$/, '/');
     
     function makeUrl(relativeUrl) {
-      if (relativeUrl.startsWith('/') || relativeUrl.startsWith('http')) {
+      if (relativeUrl.startsWith('http')) {
         return relativeUrl;
+      }
+      if (relativeUrl.startsWith('/')) {
+        return window.location.origin + relativeUrl;
       }
       return basePath + relativeUrl;
     }
@@ -395,12 +400,10 @@
       document.querySelectorAll('[data-post-url]').forEach(link => {
         link.addEventListener('click', (e) => {
           e.preventDefault();
-          let url = link.dataset.postUrl;
-          if (!url.startsWith('/')) {
-            url = basePath + url;
-          }
-          history.pushState(null, '', url);
-          loadPost(url);
+          const url = link.dataset.postUrl;
+          const fullUrl = makeUrl(url);
+          history.pushState(null, '', fullUrl);
+          loadPost(fullUrl);
         });
       });
 
@@ -468,15 +471,21 @@
     });
 
     document.addEventListener('click', (e) => {
+      const logoLink = e.target.closest('.logo');
+      if (logoLink) {
+        e.preventDefault();
+        history.pushState(null, '', basePath);
+        renderHome();
+        return;
+      }
+
       const link = e.target.closest('[data-post-url]');
       if (link) {
         e.preventDefault();
-        let url = link.dataset.postUrl;
-        if (!url.startsWith('/')) {
-          url = basePath + url;
-        }
-        history.pushState(null, '', url);
-        loadPost(url);
+        const url = link.dataset.postUrl;
+        const fullUrl = makeUrl(url);
+        history.pushState(null, '', fullUrl);
+        loadPost(fullUrl);
       }
     });
 
