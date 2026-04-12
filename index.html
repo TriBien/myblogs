@@ -1,275 +1,427 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>First Principles — Deep Dive Blog</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-primary: #0a0a0b;
-      --bg-secondary: #141416;
-      --bg-tertiary: #1c1c1f;
-      --border-color: #2a2a2e;
-      --text-primary: #fafafa;
-      --text-secondary: #a1a1aa;
-      --text-muted: #71717a;
-      --accent: #faf089;
-      --accent-secondary: #facc15;
-      --radius: 6px;
-      --transition: 0.2s ease;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-    a { color: inherit; text-decoration: none; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>First Principles — Deep Dive Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0a0b;
+        --bg-secondary: #141416;
+        --bg-tertiary: #1c1c1f;
+        --border-color: #2a2a2e;
+        --text-primary: #fafafa;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+        --accent: #faf089;
+        --accent-secondary: #facc15;
+        --radius: 6px;
+        --transition: 0.2s ease;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-    header {
-      background: rgba(10, 10, 11, 0.8);
-      border-bottom: 1px solid var(--border-color);
-      padding: 16px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(16px);
-    }
-    .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-    .logo-icon {
-      font-size: 1.4rem;
-      color: var(--accent);
-    }
-    .logo-text {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .nav-links {
-      display: flex;
-      gap: 24px;
-    }
-    .nav-links a {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      transition: var(--transition);
-    }
-    .nav-links a:hover {
-      color: var(--text-primary);
-    }
+      header {
+        background: rgba(10, 10, 11, 0.8);
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(16px);
+      }
+      .header-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .logo-icon {
+        font-size: 1.4rem;
+        color: var(--accent);
+      }
+      .logo-text {
+        background: linear-gradient(
+          135deg,
+          var(--accent) 0%,
+          var(--accent-secondary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .nav-links {
+        display: flex;
+        gap: 24px;
+      }
+      .nav-links a {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        transition: var(--transition);
+      }
+      .nav-links a:hover {
+        color: var(--text-primary);
+      }
 
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 56px 24px;
-    }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 56px 24px;
+      }
 
-    .hero {
-      text-align: center;
-      margin-bottom: 64px;
-      padding: 48px 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border-color);
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 24px;
-    }
-    .hero h1 {
-      font-size: 2.75rem;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      line-height: 1.15;
-      margin-bottom: 20px;
-    }
-    .hero h1 .highlight {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p {
-      color: var(--text-secondary);
-      font-size: 1.125rem;
-      max-width: 520px;
-      margin: 0 auto;
-    }
+      .hero {
+        text-align: center;
+        margin-bottom: 64px;
+        padding: 48px 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 24px;
+      }
+      .hero h1 {
+        font-size: 2.75rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1.15;
+        margin-bottom: 20px;
+      }
+      .hero h1 .highlight {
+        background: linear-gradient(
+          135deg,
+          var(--accent) 0%,
+          var(--accent-secondary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .hero p {
+        color: var(--text-secondary);
+        font-size: 1.125rem;
+        max-width: 520px;
+        margin: 0 auto;
+      }
 
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-    }
-    .section-header h2 {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+      .section-header h2 {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
 
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 36px;
-    }
-    .filter-btn {
-      padding: 8px 16px;
-      border: 1px solid var(--border-color);
-      background: transparent;
-      color: var(--text-secondary);
-      border-radius: 100px;
-      cursor: pointer;
-      font-size: 0.8125rem;
-      font-weight: 500;
-      transition: var(--transition);
-    }
-    .filter-btn:hover {
-      border-color: var(--text-secondary);
-      color: var(--text-primary);
-    }
-    .filter-btn.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: var(--bg-primary);
-    }
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 36px;
+      }
+      .filter-btn {
+        padding: 8px 16px;
+        border: 1px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
+        border-radius: 100px;
+        cursor: pointer;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+      .filter-btn:hover {
+        border-color: var(--text-secondary);
+        color: var(--text-primary);
+      }
+      .filter-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--bg-primary);
+      }
 
-    .posts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-    }
+      .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+      }
 
-    .post-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      transition: var(--transition);
-      position: relative;
-      cursor: pointer;
-    }
-    .post-card::after {
-      content: '→';
-      position: absolute;
-      right: 24px;
-      bottom: 28px;
-      font-size: 1.25rem;
-      color: var(--accent);
-      opacity: 0;
-      transform: translateX(-8px);
-      transition: var(--transition);
-    }
-    .post-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
-    .post-card:hover::after {
-      opacity: 1;
-      transform: translateX(0);
-    }
+      .post-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        transition: var(--transition);
+        position: relative;
+        cursor: pointer;
+      }
+      .post-card::after {
+        content: "→";
+        position: absolute;
+        right: 24px;
+        bottom: 28px;
+        font-size: 1.25rem;
+        color: var(--accent);
+        opacity: 0;
+        transform: translateX(-8px);
+        transition: var(--transition);
+      }
+      .post-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .post-card:hover::after {
+        opacity: 1;
+        transform: translateX(0);
+      }
 
-    .post-card .category {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 10px;
-      background: var(--bg-tertiary);
-      border-radius: 4px;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      width: fit-content;
-      margin-bottom: 16px;
-      font-family: 'Space Mono', monospace;
-    }
-    .post-card h2 {
-      font-size: 1.125rem;
-      font-weight: 600;
-      line-height: 1.4;
-      margin-bottom: 12px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .post-card .excerpt {
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      flex-grow: 1;
-    }
-    .post-card .meta {
-      display: flex;
-      align-items: center;
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-color);
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-family: 'Space Mono', monospace;
-    }
+      .post-card .category {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        background: var(--bg-tertiary);
+        border-radius: 4px;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        width: fit-content;
+        margin-bottom: 16px;
+        font-family: "Space Mono", monospace;
+      }
+      .post-card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 1.4;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .post-card .excerpt {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex-grow: 1;
+      }
+      .post-card .meta {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-family: "Space Mono", monospace;
+      }
 
-    .empty-state {
-      text-align: center;
-      padding: 80px 20px;
-      color: var(--text-muted);
-    }
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text-muted);
+      }
 
-    footer {
-      text-align: center;
-      padding: 40px 24px;
-      border-top: 1px solid var(--border-color);
-      color: var(--text-muted);
-      font-size: 0.8125rem;
-    }
+      footer {
+        text-align: center;
+        padding: 40px 24px;
+        border-top: 1px solid var(--border-color);
+        color: var(--text-muted);
+        font-size: 0.8125rem;
+      }
 
-    @media (max-width: 640px) {
-      .hero h1 { font-size: 1.875rem; }
-      .posts-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 32px;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        transition: color 0.2s;
+      }
 
-  <!-- Favicon (browser tab icon) -->
+      .back-link:hover {
+        color: var(--accent);
+      }
+
+      .post-header {
+        margin-bottom: 40px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .post-header .category {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        background: var(--bg-tertiary);
+        border-radius: 4px;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 16px;
+        font-family: "Space Mono", monospace;
+      }
+      .post-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        margin-bottom: 16px;
+      }
+      .post-header .meta {
+        display: flex;
+        gap: 16px;
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        font-family: "Space Mono", monospace;
+      }
+
+      .content {
+        font-size: 1.0625rem;
+        color: var(--text-secondary);
+      }
+      .content p {
+        margin-bottom: 1.5em;
+      }
+      .content h2 {
+        font-size: 1.375rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 2em 0 1em;
+      }
+      .content h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 1.5em 0 0.75em;
+      }
+      .content ul,
+      .content ol {
+        margin-bottom: 1.5em;
+        padding-left: 1.5em;
+      }
+      .content li {
+        margin-bottom: 0.5em;
+      }
+      .content code {
+        font-family: "Space Mono", monospace;
+        background: var(--bg-tertiary);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.875em;
+      }
+      .content pre {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 20px;
+        overflow-x: auto;
+        margin: 1.5em 0;
+      }
+      .content pre code {
+        background: none;
+        padding: 0;
+      }
+      .content blockquote {
+        border-left: 3px solid var(--accent);
+        padding-left: 20px;
+        margin: 1.5em 0;
+        font-style: italic;
+        color: var(--text-muted);
+      }
+      .content a {
+        color: var(--accent);
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s;
+      }
+      .content a:hover {
+        border-bottom-color: var(--accent);
+      }
+      .content img {
+        max-width: 100%;
+        border-radius: var(--radius);
+        margin: 1.5em 0;
+      }
+      .content hr {
+        border: none;
+        border-top: 1px solid var(--border-color);
+        margin: 2em 0;
+      }
+
+      main {
+        /* max-width: 720px; */
+        margin: 0 auto;
+        padding: 40px 24px;
+      }
+
+      @media (max-width: 640px) {
+        .hero h1 {
+          font-size: 1.875rem;
+        }
+        .posts-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+
+    <!-- Favicon (browser tab icon) -->
     <link rel="icon" href="icons/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="icons/favicon.ico" type="image/x-icon" />
 
@@ -297,170 +449,182 @@
     <!-- Android / PWA Icon -->
     <link rel="manifest" href="site.webmanifest" />
     <meta name="theme-color" content="#ffffff" />
-</head>
-<body>
-  <header>
-    <div class="header-inner">
-      <a href="index.html" class="logo" data-link>
-        <span class="logo-icon">◈</span>
-        <span class="logo-text">First Principles</span>
-      </a>
-      <nav class="nav-links">
-        <a href="https://github.com/TriBien" target="_blank" rel="noopener">GitHub</a>
-      </nav>
-    </div>
-  </header>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a href="index.html" class="logo" data-link>
+          <span class="logo-icon">◈</span>
+          <span class="logo-text">First Principles</span>
+        </a>
+        <nav class="nav-links">
+          <a href="https://github.com/TriBien" target="_blank" rel="noopener"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
 
-  <main id="main"></main>
+    <main id="main"></main>
 
-  <div id="footer"></div>
+    <div id="footer"></div>
 
-  <script src="posts.js"></script>
-  <script>
-    const POSTS = window.POSTS || [];
-    const mainEl = document.getElementById('main');
-    const categories = ['all', ...new Set(POSTS.map(p => p.category))];
+    <script src="posts.js"></script>
+    <script>
+      const POSTS = window.POSTS || [];
+      const mainEl = document.getElementById("main");
+      const categories = ["all", ...new Set(POSTS.map((p) => p.category))];
 
-    const state = {
-      category: 'all',
-      slug: null
-    };
+      const state = {
+        category: "all",
+        slug: null,
+      };
 
-    function getPostBySlug(slug) {
-      return POSTS.find(p => p.slug === slug);
-    }
-
-    function buildUrl(slug) {
-      return slug ? `./?post=${slug}` : 'index.html';
-    }
-
-    function parseUrl() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('post');
-    }
-
-    async function loadPost(slug) {
-      const post = getPostBySlug(slug);
-      if (!post) {
-        mainEl.innerHTML = '<div class="empty-state">Post not found</div>';
-        return;
+      function getPostBySlug(slug) {
+        return POSTS.find((p) => p.slug === slug);
       }
 
-      try {
-        const response = await fetch(post.url);
-        const html = await response.text();
-        mainEl.innerHTML = html;
-        window.scrollTo(0, 0);
-      } catch (err) {
-        mainEl.innerHTML = '<div class="empty-state">Failed to load post</div>';
-        console.error('Load post error:', err);
+      function buildUrl(slug) {
+        return slug ? `./?post=${slug}` : "index.html";
       }
-    }
 
-    function renderFilters() {
-      const filtersEl = document.getElementById('filters') || document.createElement('div');
-      filtersEl.className = 'filters';
-      filtersEl.id = 'filters';
-      filtersEl.innerHTML = categories.map(c => 
-        `<button class="filter-btn ${c === state.category ? 'active' : ''}" data-category="${c}">${c === 'all' ? 'All' : c}</button>`
-      ).join('');
-      filtersEl.addEventListener('click', handleFilterClick);
-      return filtersEl;
-    }
+      function parseUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("post");
+      }
 
-    function renderGrid() {
-      const gridEl = document.createElement('div');
-      gridEl.className = 'posts-grid';
-      gridEl.id = 'grid';
+      async function loadPost(slug) {
+        const post = getPostBySlug(slug);
+        if (!post) {
+          mainEl.innerHTML = '<div class="empty-state">Post not found</div>';
+          return;
+        }
 
-      const filtered = state.category === 'all' 
-        ? POSTS 
-        : POSTS.filter(p => p.category === state.category);
+        try {
+          const response = await fetch(post.url);
+          const html = await response.text();
+          mainEl.innerHTML = html;
+          window.scrollTo(0, 0);
+        } catch (err) {
+          mainEl.innerHTML =
+            '<div class="empty-state">Failed to load post</div>';
+          console.error("Load post error:", err);
+        }
+      }
 
-      if (filtered.length === 0) {
-        gridEl.innerHTML = '<div class="empty-state">No posts found</div>';
-      } else {
-        gridEl.innerHTML = filtered.map(post => `
+      function renderFilters() {
+        const filtersEl =
+          document.getElementById("filters") || document.createElement("div");
+        filtersEl.className = "filters";
+        filtersEl.id = "filters";
+        filtersEl.innerHTML = categories
+          .map(
+            (c) =>
+              `<button class="filter-btn ${c === state.category ? "active" : ""}" data-category="${c}">${c === "all" ? "All" : c}</button>`,
+          )
+          .join("");
+        filtersEl.addEventListener("click", handleFilterClick);
+        return filtersEl;
+      }
+
+      function renderGrid() {
+        const gridEl = document.createElement("div");
+        gridEl.className = "posts-grid";
+        gridEl.id = "grid";
+
+        const filtered =
+          state.category === "all"
+            ? POSTS
+            : POSTS.filter((p) => p.category === state.category);
+
+        if (filtered.length === 0) {
+          gridEl.innerHTML = '<div class="empty-state">No posts found</div>';
+        } else {
+          gridEl.innerHTML = filtered
+            .map(
+              (post) => `
           <div class="post-card" data-slug="${post.slug}">
             <span class="category">${post.category}</span>
             <h2>${post.title}</h2>
-            <p class="excerpt">${post.excerpt || ''}</p>
+            <p class="excerpt">${post.excerpt || ""}</p>
             <div class="meta">${post.date}</div>
           </div>
-        `).join('');
+        `,
+            )
+            .join("");
+        }
+        return gridEl;
       }
-      return gridEl;
-    }
 
-    function renderHome() {
-      const hero = document.createElement('div');
-      hero.className = 'hero';
-      hero.innerHTML = `
+      function renderHome() {
+        const hero = document.createElement("div");
+        hero.className = "hero";
+        hero.innerHTML = `
         <div class="hero-tag">◈ Must Understand Deeply</div>
         <h1>Question everything.<br><span class="highlight">Build from first principles.</span></h1>
         <p>Technical exploration through the lens of fundamentals — not trending, but true.</p>
       `;
 
-      const sectionHeader = document.createElement('div');
-      sectionHeader.className = 'section-header';
-      sectionHeader.innerHTML = '<h2>All Posts</h2>';
+        const sectionHeader = document.createElement("div");
+        sectionHeader.className = "section-header";
+        sectionHeader.innerHTML = "<h2>All Posts</h2>";
 
-      mainEl.innerHTML = '';
-      mainEl.appendChild(hero);
-      mainEl.appendChild(sectionHeader);
-      mainEl.appendChild(renderFilters());
-      mainEl.appendChild(renderGrid());
-    }
+        mainEl.innerHTML = "";
+        mainEl.appendChild(hero);
+        mainEl.appendChild(sectionHeader);
+        mainEl.appendChild(renderFilters());
+        mainEl.appendChild(renderGrid());
+      }
 
-    function handleFilterClick(e) {
-      if (!e.target.classList.contains('filter-btn')) return;
-      state.category = e.target.dataset.category;
-      renderHome();
-    }
-
-    function handleRouteChange() {
-      const slug = parseUrl();
-      state.slug = slug;
-
-      console.log("slug: ", slug)
-      if (slug) {
-        loadPost(slug);
-      } else {
+      function handleFilterClick(e) {
+        if (!e.target.classList.contains("filter-btn")) return;
+        state.category = e.target.dataset.category;
         renderHome();
       }
-    }
 
-    document.addEventListener('click', (e) => {
-      const logoLink = e.target.closest('.logo');
-      if (logoLink) {
-        e.preventDefault();
-        history.pushState(null, '', buildUrl(null));
-        state.category = 'all';
-        handleRouteChange();
-        return;
-      }
-
-      const postCard = e.target.closest('.post-card');
-      if (postCard) {
-        e.preventDefault();
-        const slug = postCard.dataset.slug;
-        history.pushState(null, '', buildUrl(slug));
+      function handleRouteChange() {
+        const slug = parseUrl();
         state.slug = slug;
-        loadPost(slug);
+
+        console.log("slug: ", slug);
+        if (slug) {
+          loadPost(slug);
+        } else {
+          renderHome();
+        }
       }
 
-      const backLink = e.target.closest('.back-link');
-      if (backLink) {
-        e.preventDefault();
-        history.pushState(null, '', buildUrl(null));
-        state.slug = null;
-        renderHome();
-      }
-    });
+      document.addEventListener("click", (e) => {
+        const logoLink = e.target.closest(".logo");
+        if (logoLink) {
+          e.preventDefault();
+          history.pushState(null, "", buildUrl(null));
+          state.category = "all";
+          handleRouteChange();
+          return;
+        }
 
-    window.addEventListener('popstate', handleRouteChange);
+        const postCard = e.target.closest(".post-card");
+        if (postCard) {
+          e.preventDefault();
+          const slug = postCard.dataset.slug;
+          history.pushState(null, "", buildUrl(slug));
+          state.slug = slug;
+          loadPost(slug);
+        }
 
-    handleRouteChange();
-  </script>
-</body>
+        const backLink = e.target.closest(".back-link");
+        if (backLink) {
+          e.preventDefault();
+          history.pushState(null, "", buildUrl(null));
+          state.slug = null;
+          renderHome();
+        }
+      });
+
+      window.addEventListener("popstate", handleRouteChange);
+
+      handleRouteChange();
+    </script>
+  </body>
 </html>
