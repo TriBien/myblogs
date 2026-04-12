@@ -18,8 +18,10 @@ generate_post_json() {
   local date=$(date +%Y-%m-%d -r "$file" 2>/dev/null || date +%Y-%m-%d)
   local excerpt=$(sed -n 's/.*<p[^>]*>\([^<]*\).*/\1/p; s/.*<p>\([^<]*\).*/\1/p' "$file" 2>/dev/null | head -1 | head -c 150)
   
-  printf '{ category: "%s", title: "%s", url: "%s", date: "%s", excerpt: "%s" }' \
-    "$category" "$title" "$url" "$date" "$excerpt"
+  local slug=$(basename "$file" .html)
+  
+  printf '{ category: "%s", slug: "%s", title: "%s", url: "%s", date: "%s", excerpt: "%s" }' \
+    "$category" "$slug" "$title" "$url" "$date" "$excerpt"
 }
 
 echo "window.POSTS = [" > "$OUTPUT_FILE"

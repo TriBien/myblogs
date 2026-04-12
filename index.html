@@ -182,6 +182,7 @@
       flex-direction: column;
       transition: var(--transition);
       position: relative;
+      cursor: pointer;
     }
     .post-card::after {
       content: '→';
@@ -300,7 +301,7 @@
 <body>
   <header>
     <div class="header-inner">
-      <a href="#" class="logo" data-base-path>
+      <a href="index.html" class="logo" data-link>
         <span class="logo-icon">◈</span>
         <span class="logo-text">First Principles</span>
       </a>
@@ -310,196 +311,154 @@
     </div>
   </header>
 
-  <main id="main">
-    <div class="hero">
-      <div class="hero-tag">◈ Must Understand Deeply</div>
-      <h1>Question everything.<br><span class="highlight">Build from first principles.</span></h1>
-      <p>Technical exploration through the lens of fundamentals — not trending, but true.</p>
-    </div>
-
-    <div class="section-header">
-      <h2>All Posts</h2>
-    </div>
-    <div class="filters" id="filters"></div>
-    <div class="posts-grid" id="grid"></div>
-  </main>
+  <main id="main"></main>
 
   <div id="footer"></div>
 
   <script src="posts.js"></script>
   <script>
-    const posts = window.POSTS || [];
+    const POSTS = window.POSTS || [];
     const mainEl = document.getElementById('main');
-    const filtersEl = document.getElementById('filters');
-    const gridEl = document.getElementById('grid');
-    let currentCategory = 'all';
+    const categories = ['all', ...new Set(POSTS.map(p => p.category))];
 
-    const categories = ['all', ...new Set(posts.map(p => p.category))];
+    const state = {
+      category: 'all',
+      slug: null
+    };
 
-    function renderFilters() {
-      filtersEl.innerHTML = categories.map(c => 
-        `<button class="filter-btn ${c === currentCategory ? 'active' : ''}" data-category="${c}">${c === 'all' ? 'All' : c}</button>`
-      ).join('');
+    function getPostBySlug(slug) {
+      return POSTS.find(p => p.slug === slug);
     }
 
-    function renderGrid() {
-      const filtered = currentCategory === 'all' ? posts : posts.filter(p => p.category === currentCategory);
-      
-      if (filtered.length === 0) {
-        gridEl.innerHTML = '<div class="empty-state">No posts found</div>';
+    function buildUrl(slug) {
+      return slug ? `index.html?post=${slug}` : 'index.html';
+    }
+
+    function parseUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('post');
+    }
+
+    async function loadPost(slug) {
+      const post = getPostBySlug(slug);
+      if (!post) {
+        mainEl.innerHTML = '<div class="empty-state">Post not found</div>';
         return;
       }
 
-      gridEl.innerHTML = filtered.map(post => `
-        <a href="${post.url}" class="post-card" data-post-url="${post.url}">
-          <span class="category">${post.category}</span>
-          <h2>${post.title}</h2>
-          <p class="excerpt">${post.excerpt || ''}</p>
-          <div class="meta">${post.date}</div>
-        </a>
-      `).join('');
-    }
-
-    filtersEl.addEventListener('click', (e) => {
-      if (e.target.classList.contains('filter-btn')) {
-        currentCategory = e.target.dataset.category;
-        renderFilters();
-        renderGrid();
-      }
-    });
-
-    const basePath = window.location.pathname.endsWith('/') 
-      ? window.location.pathname 
-      : window.location.pathname.replace(/\/[^\/]*$/, '/');
-    
-    function makeUrl(relativeUrl) {
-      if (relativeUrl.startsWith('http')) {
-        return relativeUrl;
-      }
-      if (relativeUrl.startsWith('/')) {
-        return window.location.origin + relativeUrl;
-      }
-      return basePath + relativeUrl;
-    }
-
-    async function loadPost(url) {
       try {
-        const fullUrl = makeUrl(url);
-        const response = await fetch(fullUrl);
+        const response = await fetch(post.url);
         const html = await response.text();
         mainEl.innerHTML = html;
         window.scrollTo(0, 0);
-        setupPostLinks();
       } catch (err) {
         mainEl.innerHTML = '<div class="empty-state">Failed to load post</div>';
         console.error('Load post error:', err);
       }
     }
 
-    function setupPostLinks() {
-      document.querySelectorAll('[data-post-url]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          const url = link.dataset.postUrl;
-          const fullUrl = makeUrl(url);
-          history.pushState(null, '', fullUrl);
-          loadPost(fullUrl);
-        });
-      });
-
-      document.querySelectorAll('.back-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          history.pushState(null, '', basePath);
-          renderHome();
-        });
-      });
+    function renderFilters() {
+      const filtersEl = document.getElementById('filters') || document.createElement('div');
+      filtersEl.className = 'filters';
+      filtersEl.id = 'filters';
+      filtersEl.innerHTML = categories.map(c => 
+        `<button class="filter-btn ${c === state.category ? 'active' : ''}" data-category="${c}">${c === 'all' ? 'All' : c}</button>`
+      ).join('');
+      filtersEl.addEventListener('click', handleFilterClick);
+      return filtersEl;
     }
 
-    function renderHome() {
-      mainEl.innerHTML = `
-        <div class="hero">
-          <div class="hero-tag">◈ Must Understand Deeply</div>
-          <h1>Question everything.<br><span class="highlight">Build from first principles.</span></h1>
-          <p>Technical exploration through the lens of fundamentals — not trending, but true.</p>
-        </div>
-        <div class="section-header">
-          <h2>All Posts</h2>
-        </div>
-        <div class="filters" id="filters"></div>
-        <div class="posts-grid" id="grid"></div>
-      `;
-      const newFiltersEl = document.getElementById('filters');
-      const newGridEl = document.getElementById('grid');
-      
-      const newCategories = ['all', ...new Set(posts.map(p => p.category))];
-      newFiltersEl.innerHTML = newCategories.map(c => 
-        `<button class="filter-btn ${c === currentCategory ? 'active' : ''}" data-category="${c}">${c === 'all' ? 'All' : c}</button>`
-      ).join('');
+    function renderGrid() {
+      const gridEl = document.createElement('div');
+      gridEl.className = 'posts-grid';
+      gridEl.id = 'grid';
 
-      const filtered = currentCategory === 'all' ? posts : posts.filter(p => p.category === currentCategory);
+      const filtered = state.category === 'all' 
+        ? POSTS 
+        : POSTS.filter(p => p.category === state.category);
+
       if (filtered.length === 0) {
-        newGridEl.innerHTML = '<div class="empty-state">No posts found</div>';
+        gridEl.innerHTML = '<div class="empty-state">No posts found</div>';
       } else {
-        newGridEl.innerHTML = filtered.map(post => `
-          <a href="${post.url}" class="post-card" data-post-url="${post.url}">
+        gridEl.innerHTML = filtered.map(post => `
+          <div class="post-card" data-slug="${post.slug}">
             <span class="category">${post.category}</span>
             <h2>${post.title}</h2>
             <p class="excerpt">${post.excerpt || ''}</p>
             <div class="meta">${post.date}</div>
-          </a>
+          </div>
         `).join('');
       }
-
-      newFiltersEl.addEventListener('click', (e) => {
-        if (e.target.classList.contains('filter-btn')) {
-          currentCategory = e.target.dataset.category;
-          renderHome();
-        }
-      });
-
-      setupPostLinks();
+      return gridEl;
     }
 
-    window.addEventListener('popstate', () => {
-      const path = window.location.pathname;
-      if (path === basePath || path === basePath + 'index.html') {
+    function renderHome() {
+      const hero = document.createElement('div');
+      hero.className = 'hero';
+      hero.innerHTML = `
+        <div class="hero-tag">◈ Must Understand Deeply</div>
+        <h1>Question everything.<br><span class="highlight">Build from first principles.</span></h1>
+        <p>Technical exploration through the lens of fundamentals — not trending, but true.</p>
+      `;
+
+      const sectionHeader = document.createElement('div');
+      sectionHeader.className = 'section-header';
+      sectionHeader.innerHTML = '<h2>All Posts</h2>';
+
+      mainEl.innerHTML = '';
+      mainEl.appendChild(hero);
+      mainEl.appendChild(sectionHeader);
+      mainEl.appendChild(renderFilters());
+      mainEl.appendChild(renderGrid());
+    }
+
+    function handleFilterClick(e) {
+      if (!e.target.classList.contains('filter-btn')) return;
+      state.category = e.target.dataset.category;
+      renderHome();
+    }
+
+    function handleRouteChange() {
+      const slug = parseUrl();
+      state.slug = slug;
+      if (slug) {
+        loadPost(slug);
+      } else {
         renderHome();
-      } else if (path.includes('/contents/') && path.endsWith('.html')) {
-        loadPost(path);
       }
-    });
+    }
 
     document.addEventListener('click', (e) => {
       const logoLink = e.target.closest('.logo');
       if (logoLink) {
         e.preventDefault();
-        history.pushState(null, '', basePath);
-        renderHome();
+        history.pushState(null, '', buildUrl(null));
+        state.category = 'all';
+        handleRouteChange();
         return;
       }
 
-      const link = e.target.closest('[data-post-url]');
-      if (link) {
+      const postCard = e.target.closest('.post-card');
+      if (postCard) {
         e.preventDefault();
-        const url = link.dataset.postUrl;
-        const fullUrl = makeUrl(url);
-        history.pushState(null, '', fullUrl);
-        loadPost(fullUrl);
+        const slug = postCard.dataset.slug;
+        history.pushState(null, '', buildUrl(slug));
+        state.slug = slug;
+        loadPost(slug);
+      }
+
+      const backLink = e.target.closest('.back-link');
+      if (backLink) {
+        e.preventDefault();
+        history.pushState(null, '', buildUrl(null));
+        state.slug = null;
+        renderHome();
       }
     });
 
-    const path = window.location.pathname;
-    const params = new URLSearchParams(window.location.search);
-    const postParam = params.get('post');
-    
-    if (path.endsWith('.html') && path.includes('/contents/')) {
-      loadPost(path);
-    } else if (postParam) {
-      loadPost(basePath + postParam);
-    } else {
-      renderHome();
-    }
+    window.addEventListener('popstate', handleRouteChange);
+
+    handleRouteChange();
   </script>
 </body>
 </html>
