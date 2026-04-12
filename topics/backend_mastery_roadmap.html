@@ -1,0 +1,216 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.hd{padding:1.25rem 1.25rem 0.75rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.hd h1{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.hd p{font-size:13px;color:var(--color-text-secondary);margin-top:3px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;padding:0.6rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.fbar{display:flex;gap:6px;flex-wrap:wrap;padding:0.6rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.fb{font-size:12px;padding:4px 10px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.fb.act{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.tier{border-bottom:0.5px solid var(--color-border-tertiary)}
+.th{display:flex;align-items:center;gap:10px;padding:0.7rem 1.25rem;cursor:pointer;background:transparent;border:none;width:100%;text-align:left}
+.th:hover{background:var(--color-background-secondary)}
+.tdot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.ttitle{font-size:14px;font-weight:500;color:var(--color-text-primary);flex:1}
+.tmeta{font-size:12px;color:var(--color-text-tertiary)}
+.tchev{font-size:11px;color:var(--color-text-tertiary);transition:transform .18s}
+.tchev.op{transform:rotate(90deg)}
+.tb{display:none;padding:0 1.25rem 1rem}
+.tb.op{display:block}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:9px;margin-top:0.7rem}
+.tc{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:9px 11px;background:var(--color-background-primary);cursor:pointer;transition:border-color .15s}
+.tc:hover{border-color:var(--color-border-secondary)}
+.tc.cmp{border-left:2px solid #378ADD}
+.tn{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.nb{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.nb-java{background:rgba(186,117,23,.12);color:#633806;border:0.5px solid rgba(186,117,23,.3)}
+.nb-go{background:rgba(55,138,221,.10);color:#0C447C;border:0.5px solid rgba(55,138,221,.28)}
+.nb-node{background:rgba(99,153,34,.10);color:#27500A;border:0.5px solid rgba(99,153,34,.28)}
+.nb-cmp{background:rgba(55,138,221,.10);color:#0C447C;border:0.5px solid rgba(55,138,221,.28)}
+.pills{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.pill{font-size:11px;padding:2px 6px;border-radius:10px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.pill.java{background:rgba(186,117,23,.08);border-color:rgba(186,117,23,.25);color:#854F0B}
+.pill.go{background:rgba(55,138,221,.08);border-color:rgba(55,138,221,.25);color:#185FA5}
+.pill.node{background:rgba(99,153,34,.08);border-color:rgba(99,153,34,.25);color:#3B6D11}
+.pill.core{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.desc{font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin-top:2px}
+.cmp-note{font-size:11px;color:var(--color-text-info);margin-top:5px;padding-top:5px;border-top:0.5px solid var(--color-border-tertiary);line-height:1.4}
+</style>
+<h2 class="sr-only">Senior Backend Engineer Mastery Roadmap — 9 tiers covering OS fundamentals, Java deep stack, Go, Node.js, distributed systems, databases, security, and production engineering with cross-language comparisons.</h2>
+<div class="hd">
+  <h1>Senior backend engineer — mastery roadmap</h1>
+  <p>Java-focused · compared with Go and Node.js · click any card to go deeper</p>
+</div>
+<div class="legend">
+  <div class="legend-item"><span class="pill java">java</span> Java/JVM</div>
+  <div class="legend-item"><span class="pill go">go</span> Go</div>
+  <div class="legend-item"><span class="pill node">node</span> Node.js</div>
+  <div class="legend-item"><span class="pill core">core</span> Language-agnostic</div>
+  <div class="legend-item"><span style="display:inline-block;width:10px;height:10px;border-left:2px solid #378ADD;margin-right:2px"></span> Cross-language comparison</div>
+</div>
+<div class="fbar">
+  <button class="fb act" onclick="filt('all',this)">All tiers</button>
+  <button class="fb" onclick="filt('core',this)">Core only</button>
+  <button class="fb" onclick="filt('java',this)">Java</button>
+  <button class="fb" onclick="filt('go',this)">Go</button>
+  <button class="fb" onclick="filt('node',this)">Node.js</button>
+  <button class="fb" onclick="filt('cmp',this)">Comparisons</button>
+</div>
+<div id="root"></div>
+<script>
+const D=[
+{id:1,color:"#E24B4A",label:"Tier 1",title:"OS & runtime foundations",topics:[
+  {n:"Process vs thread vs coroutine",p:["core"],d:"Process isolation, thread stack cost, user-space scheduling. Foundation for choosing concurrency models.",cmp:"Java: threads (heavy, ~1MB stack) → virtual threads (JDK 21, ~KB). Go: goroutines (~2KB, growable stack). Node: single thread + event loop — no threads by default."},
+  {n:"Memory model & heap layout",p:["core"],d:"Stack vs heap, object headers, alignment, padding. How allocations affect GC pressure.",cmp:"Java: generational GC (G1, ZGC, Shenandoah). Go: tri-color mark-sweep, escape analysis avoids heap. Node/V8: generational GC, hidden classes, pointer compression."},
+  {n:"Garbage collection internals",p:["java","go","node"],d:"Stop-the-world pauses, concurrent marking, compaction, GC tuning knobs. Latency vs throughput tradeoffs.",cmp:"Java: rich GC flags (-Xmx, GC logging, JFR). Go: GC target GOGC/GOMEMLIMIT. Node: --max-old-space-size, V8 heap snapshots."},
+  {n:"System calls & I/O models",p:["core"],d:"Blocking, non-blocking, multiplexing (epoll/kqueue), io_uring. All async runtimes reduce to these primitives.",cmp:"Java NIO: Selector/Channel. Go: netpoller wraps epoll transparently. Node: libuv wraps epoll/kqueue."},
+  {n:"CPU caches & false sharing",p:["core"],d:"L1/L2/L3 latency, cache line size, padding structs to avoid contention in concurrent code.",cmp:"Java: @Contended annotation. Go: manual padding with arrays. Node: less relevant but matters for native addons."},
+  {n:"File descriptors & resource limits",p:["core"],d:"ulimit, file descriptor exhaustion, SO_REUSEPORT, connection limits. Silent killers in production.",cmp:"All three hit the same kernel limits. Java: NIO channels map 1:1 to FDs. Go/Node: same."},
+]},
+{id:2,color:"#EF9F27",label:"Tier 2",title:"Java deep stack — language & runtime",topics:[
+  {n:"JVM class loading & bytecode",p:["java"],d:"Bootstrap/platform/app classloaders, ClassLoader isolation, bytecode verification, JIT tiers (C1/C2), intrinsics."},
+  {n:"Java memory model (JMM)",p:["java"],d:"Happens-before, visibility, reordering. volatile, synchronized, VarHandle. Why double-checked locking was broken before Java 5."},
+  {n:"Virtual threads (Project Loom)",p:["java"],d:"JDK 21 stable. Structured concurrency, carrier threads, pinning, thread-local migration to ScopedValue."},
+  {n:"Generics & type erasure",p:["java"],d:"Reified vs erased generics, wildcard captures, bounded types. Why List<String> and List<Integer> share the same class at runtime."},
+  {n:"Records, sealed classes & pattern matching",p:["java"],d:"Java 16-21 features. Exhaustive switch, deconstruction patterns, domain modelling without boilerplate."},
+  {n:"Streams, lambdas & functional APIs",p:["java"],d:"Lazy evaluation, spliterator, parallel streams (when they help vs hurt), Collectors composition."},
+  {n:"Reflection & dynamic proxies",p:["java"],d:"Method handles, MethodHandles.lookup(), invokedynamic. Foundation of every DI framework and serialiser."},
+  {n:"Modules (JPMS)",p:["java"],d:"module-info.java, strong encapsulation, exports/opens, --add-opens in migration, jlink for custom runtimes."},
+  {n:"GraalVM native image",p:["java"],d:"AOT compilation, reflection config, build-time initialization, startup time gains and the constraints they impose."},
+  {n:"JVM observability (JFR/JMX)",p:["java"],d:"Java Flight Recorder, JDK Mission Control, MBeans, async-profiler. The profiling toolchain a senior must know cold."},
+]},
+{id:3,color:"#378ADD",label:"Tier 3",title:"Go deep stack",topics:[
+  {n:"Goroutine scheduler (GMP)",p:["go"],d:"G (goroutine), M (OS thread), P (processor). Work stealing, preemption points, GOMAXPROCS tuning."},
+  {n:"Channels & select",p:["go"],d:"Buffered vs unbuffered, directional channels, select with default. When channels are the wrong tool (use mutexes)."},
+  {n:"sync primitives",p:["go"],d:"sync.Mutex, RWMutex, Once, WaitGroup, Pool, Map. sync/atomic for lock-free counters."},
+  {n:"Context propagation",p:["go"],d:"context.Context for cancellation, deadlines, and value passing. Why it must be the first argument everywhere."},
+  {n:"Escape analysis & alloc reduction",p:["go"],d:"go build -gcflags='-m' output, stack vs heap decision, interface boxing costs, sync.Pool for hot paths."},
+  {n:"Error handling philosophy",p:["go"],d:"errors.Is/As, wrapping with %w, sentinel errors, custom error types. Explicit over exception-based control flow.",cmp:"Java: checked vs unchecked exceptions, try-with-resources. Node: Error-first callbacks → Promise rejections. Go: explicit return value — forces handling at every layer."},
+  {n:"Interfaces & duck typing",p:["go"],d:"Implicit satisfaction, interface pollution, accept interfaces return structs, io.Reader/Writer as design north star."},
+  {n:"Generics (Go 1.18+)",p:["go"],d:"Type parameters, constraints, type inference, comparable. When to use vs when to keep interface{}."},
+  {n:"Module system & toolchain",p:["go"],d:"go.mod, go.sum, replace directives, workspace mode, toolchain directive (Go 1.21). Reproducible builds."},
+  {n:"cgo & unsafe",p:["go"],d:"Calling C from Go, cgo overhead, unsafe.Pointer rules. When and why to avoid both."},
+]},
+{id:4,color:"#639922",label:"Tier 4",title:"Node.js deep stack",topics:[
+  {n:"Event loop phases",p:["node"],d:"timers → pending callbacks → idle/prepare → poll → check → close. Where your code actually runs.",cmp:"Java/Go: threads do work while blocked. Node: single thread never blocks — delegates I/O to libuv thread pool, returns via callbacks/promises."},
+  {n:"libuv thread pool",p:["node"],d:"Default 4 threads for fs, DNS, crypto. UV_THREADPOOL_SIZE. Blocking the pool causes latency spikes."},
+  {n:"Streams & backpressure",p:["node"],d:"Readable, Writable, Transform, pipeline(). highWaterMark, drain event, paused vs flowing mode.",cmp:"Java: InputStream/OutputStream → Reactive Streams (Project Reactor, RxJava). Go: io.Reader/Writer with explicit copy loops. Node: streams are first-class and composable."},
+  {n:"Worker threads",p:["node"],d:"node:worker_threads for CPU work, SharedArrayBuffer + Atomics for shared memory, MessageChannel for comms."},
+  {n:"V8 optimizations",p:["node"],d:"Hidden classes, monomorphic/polymorphic call sites, deopt triggers. Writing V8-friendly hot paths."},
+  {n:"Native addons (N-API/napi)",p:["node"],d:"Writing C++ extensions, N-API stability across Node versions, node-gyp build system."},
+  {n:"ESM vs CJS interop",p:["node"],d:"require() vs import, conditional exports in package.json, dual-mode packages, top-level await."},
+  {n:"Cluster & child_process",p:["node"],d:"cluster.fork() for multi-core, child_process.spawn for subprocess, IPC channel patterns."},
+]},
+{id:5,color:"#1D9E75",label:"Tier 5",title:"Concurrency & async patterns",topics:[
+  {n:"Thread safety fundamentals",p:["core"],d:"Race conditions, data races vs logic races, happens-before, memory visibility. The universal truth beneath all concurrency models."},
+  {n:"Lock-free & wait-free data structures",p:["core"],d:"CAS operations, ABA problem, epoch-based reclamation. When to reach for them vs accepting a mutex.",cmp:"Java: java.util.concurrent (ConcurrentHashMap, AtomicLong, LongAdder). Go: sync/atomic + careful use. Node: single-threaded — only relevant in worker threads with SharedArrayBuffer."},
+  {n:"Reactive streams & back-pressure",p:["java","node"],d:"Publisher/Subscriber contract, demand signalling, bounded queues. Prevents fast producer overwhelming slow consumer.",cmp:"Java: Project Reactor (Flux/Mono), RxJava, Spring WebFlux. Node: Node.js streams API. Go: channel buffering + select with default as natural back-pressure."},
+  {n:"Structured concurrency",p:["java","go"],d:"Scoped lifetime of concurrent tasks, automatic cancellation propagation, error aggregation.",cmp:"Java: JDK 21 StructuredTaskScope. Go: errgroup.Group + context. Node: Promise.allSettled — no enforced structure."},
+  {n:"Actor model",p:["java"],d:"Akka (classic & typed), actor supervision, mailboxes, ask pattern, cluster sharding for distributed actors."},
+  {n:"Async/await internals",p:["java","node"],d:"State machine transformation, continuation passing, scheduler interaction.",cmp:"Java: CompletableFuture chain vs virtual thread blocking style. Node: async/await desugars to Promise chains. Go: goroutine blocks without async keyword — code looks synchronous."},
+  {n:"Rate limiting & bulkhead patterns",p:["core"],d:"Token bucket, leaky bucket, semaphore-based concurrency limits, circuit breaker. Resilience4j / hystrix / go-resiliency."},
+]},
+{id:6,color:"#7F77DD",label:"Tier 6",title:"Distributed systems",topics:[
+  {n:"CAP theorem & PACELC",p:["core"],d:"Partition tolerance is not optional. Consistency vs availability tradeoff, PACELC extends CAP to latency."},
+  {n:"Consistency models",p:["core"],d:"Linearizability, sequential consistency, causal consistency, eventual consistency. What each guarantee costs."},
+  {n:"Consensus algorithms",p:["core"],d:"Paxos, Raft (leader election, log replication, snapshotting). Why you don't implement them — you use etcd/ZooKeeper."},
+  {n:"Distributed transactions",p:["core"],d:"2PC, 3PC, Saga pattern (choreography vs orchestration), outbox pattern. Why 2PC is rarely the right answer.",cmp:"Java: JTA/XA with Spring TX, Saga via Axon/Conductor. Go: manual saga wiring or Temporal. Node: same — framework-level saga libs."},
+  {n:"Event sourcing & CQRS",p:["core"],d:"Append-only log as source of truth, projections, command/query separation, snapshot strategies."},
+  {n:"Message brokers deep dive",p:["core"],d:"Kafka (partitions, consumer groups, offsets, ISR), RabbitMQ (exchanges, routing keys), NATS JetStream.",cmp:"Java: Spring Kafka, Kafka Streams, Reactor Kafka. Go: segmentio/kafka-go, sarama — manual offset management. Node: kafkajs — ergonomic but less control."},
+  {n:"gRPC & Protobuf",p:["core"],d:"IDL-first design, streaming RPCs (unary/server/client/bidi), deadlines, interceptors, reflection.",cmp:"Java: grpc-java + spring-grpc. Go: native first-class support, grpc-go. Node: @grpc/grpc-js — full support, slightly more boilerplate."},
+  {n:"Service mesh & observability",p:["core"],d:"Istio/Linkerd sidecar model, mTLS, traffic shaping, distributed tracing (OpenTelemetry), exemplars."},
+  {n:"Idempotency & exactly-once semantics",p:["core"],d:"Idempotency keys, deduplication windows, Kafka transactions, at-least-once + idempotent consumer pattern."},
+  {n:"Clock synchronization",p:["core"],d:"Lamport clocks, vector clocks, hybrid logical clocks (HLC). Why wall clock comparisons across nodes are unsafe."},
+]},
+{id:7,color:"#D4537E",label:"Tier 7",title:"Databases & persistence",topics:[
+  {n:"ACID & transaction internals",p:["core"],d:"MVCC, lock modes (row/gap/next-key), isolation levels, phantom reads, serialisable snapshot isolation."},
+  {n:"Query planning & indexes",p:["core"],d:"B-tree vs hash vs GiST/GIN indexes, EXPLAIN ANALYZE, selectivity, index-only scans, covering indexes.",cmp:"Java: JPA/Hibernate generates queries — JPQL vs Criteria API vs native. JOOQ for type-safe SQL. Go: sqlx, pgx, squirrel — mostly raw SQL. Node: Prisma, Drizzle, Knex — ORM vs query builder tradeoffs."},
+  {n:"Connection pooling",p:["core"],d:"Pool sizing (Little's Law), connection lifecycle, pgBouncer, HikariCP config, pool exhaustion symptoms.",cmp:"Java: HikariCP (industry default), c3p0. Go: database/sql built-in pool, pgxpool for Postgres. Node: pg-pool, Sequelize pool, Prisma connection limit."},
+  {n:"ORM internals & N+1",p:["core"],d:"Lazy vs eager loading, dataloader pattern, batch loading, query count monitoring in tests.",cmp:"Java: Hibernate session, L1/L2 cache, entity state machine. Go: no dominant ORM — sqlc for type-safe codegen. Node: Prisma's dataloader for N+1 mitigation."},
+  {n:"Schema migrations",p:["core"],d:"Flyway/Liquibase (Java), golang-migrate, Prisma migrate. Zero-downtime strategies: expand-contract, online DDL.",cmp:"Java: Flyway (file-based, opinionated). Go: golang-migrate (flexible, multi-driver). Node: Prisma migrate (declarative schema-first)."},
+  {n:"NoSQL data modelling",p:["core"],d:"DynamoDB access patterns (single-table design), MongoDB document design, Cassandra partition/clustering keys, Redis data structures.",cmp:"Java: Spring Data (unified repository abstraction). Go: mongo-driver, go-redis — idiomatic but more verbose. Node: mongoose (MongoDB), ioredis — ergonomic."},
+  {n:"Read replicas & sharding",p:["core"],d:"Read/write splitting, replication lag handling, consistent read strategies, hash vs range sharding, cross-shard queries."},
+  {n:"Search engines",p:["core"],d:"Elasticsearch/OpenSearch inverted index, analyzers, query DSL, relevance scoring, indexing strategies."},
+]},
+{id:8,color:"#993C1D",label:"Tier 8",title:"API design & integration",topics:[
+  {n:"REST maturity & hypermedia",p:["core"],d:"Richardson Maturity Model, HATEOAS, versioning strategies (URI, header, content negotiation), idempotent verbs."},
+  {n:"GraphQL design",p:["core"],d:"Schema-first design, resolver N+1, DataLoader, persisted queries, subscriptions, federation.",cmp:"Java: DGS (Netflix), spring-graphql. Go: gqlgen (codegen approach). Node: Apollo Server, Pothos — all viable, Apollo most mature ecosystem."},
+  {n:"OpenAPI & contract-first",p:["core"],d:"Spec-first development, codegen for clients/servers, consumer-driven contract testing (Pact).",cmp:"Java: springdoc-openapi auto-generates from annotations. Go: oapi-codegen from spec → Go types. Node: @fastify/swagger, tsoa."},
+  {n:"Webhooks & async integration",p:["core"],d:"Delivery guarantees, retry with backoff, signature verification (HMAC), fan-out architecture."},
+  {n:"API gateway patterns",p:["core"],d:"Rate limiting, auth offload, request/response transformation, circuit breaking at the edge."},
+  {n:"Streaming APIs",p:["core"],d:"Server-Sent Events, WebSocket lifecycle, HTTP/2 server push, long-polling. When each fits.",cmp:"Java: Spring WebFlux SSE, Undertow WebSocket. Go: goroutine-per-connection model makes WebSocket cheap. Node: socket.io — pioneered browser WebSocket, still popular."},
+]},
+{id:9,color:"#444441",label:"Tier 9",title:"Production engineering & senior craft",topics:[
+  {n:"Observability triad",p:["core"],d:"Structured logging (JSON), metrics (Prometheus + Grafana), distributed tracing (OpenTelemetry + Jaeger/Tempo). Correlation IDs.",cmp:"Java: Micrometer (metrics), Logback/Log4j2 (structured), OpenTelemetry Java agent. Go: zerolog/zap for fast structured logging, prometheus/client_golang. Node: pino (fastest JSON logger), @opentelemetry/node."},
+  {n:"Performance profiling",p:["core"],d:"CPU profiling, allocation profiling, flame graphs, on-CPU vs off-CPU analysis.",cmp:"Java: async-profiler, JFR, JDK Mission Control. Go: pprof (cpu, heap, goroutine, block, mutex profiles). Node: --prof, clinic.js, 0x for flame graphs."},
+  {n:"Containerisation & JVM tuning",p:["java"],d:"Container awareness (UseContainerSupport), -XX:MaxRAMPercentage, JVM in Docker CPU quotas, native memory tracking."},
+  {n:"12-factor & cloud-native design",p:["core"],d:"Config from env, stateless processes, disposability, dev/prod parity. The checklist behind every well-behaved service."},
+  {n:"Graceful shutdown",p:["core"],d:"Signal handling (SIGTERM), draining in-flight requests, connection pool teardown, k8s terminationGracePeriodSeconds.",cmp:"Java: shutdown hooks, Spring context close. Go: signal.NotifyContext, WaitGroup drain. Node: process.on('SIGTERM'), server.close()."},
+  {n:"Health checks & readiness probes",p:["core"],d:"Liveness vs readiness vs startup probes in k8s. Checking dependencies (DB, cache) without cascading failures."},
+  {n:"Circuit breaker & retry",p:["core"],d:"Exponential backoff + jitter, retry budget, circuit states (closed/open/half-open).",cmp:"Java: Resilience4j (most complete). Go: sony/gobreaker, failsafe-go. Node: cockatiel, opossum."},
+  {n:"Security: authn/authz",p:["core"],d:"JWT validation (alg confusion attacks, aud/iss checks), OAuth2 scopes, RBAC vs ABAC, API key management.",cmp:"Java: Spring Security (comprehensive, complex). Go: manual middleware chain — transparent, explicit. Node: Passport.js or manual — flexible."},
+  {n:"Secrets management",p:["core"],d:"HashiCorp Vault, AWS Secrets Manager, env injection vs sidecar, secret rotation without restarts."},
+  {n:"Load testing & capacity planning",p:["core"],d:"k6, Gatling (Java), wrk. Little's Law for throughput/latency/concurrency. Saturation point identification.",cmp:"Java: Gatling (Scala DSL, rich reporting). Go: vegeta, k6 (itself written in Go). Node: autocannon — simple, fast."},
+  {n:"Build systems & dependency management",p:["core"],d:"Reproducible builds, bill of materials, SBOM generation, dependency vulnerability scanning.",cmp:"Java: Maven vs Gradle (incremental builds, build cache). Go: go mod — minimal by design, go.sum for integrity. Node: npm/pnpm/yarn — lockfile hygiene, hoisting pitfalls."},
+  {n:"Architecture trade-off thinking",p:["core"],d:"ADRs, synchronous vs async coupling, monolith vs microservice extraction timing, strangler fig migration."},
+  {n:"Database migration strategy",p:["core"],d:"Expand-contract pattern, backward-compatible schema changes, zero-downtime deploys with running migrations."},
+]},
+];
+
+function renderAll(filter){
+  const root=document.getElementById('root');
+  root.innerHTML='';
+  D.forEach(tier=>{
+    let topics=filter==='all'?tier.topics
+      :filter==='cmp'?tier.topics.filter(t=>t.cmp)
+      :tier.topics.filter(t=>t.p.includes(filter));
+    if(!topics.length)return;
+    const wrap=document.createElement('div');
+    wrap.className='tier';
+    wrap.innerHTML=`
+      <button class="th" onclick="tog(this)">
+        <span class="tdot" style="background:${tier.color}"></span>
+        <span class="ttitle">${tier.label} — ${tier.title}</span>
+        <span class="tmeta">${topics.length} topic${topics.length!==1?'s':''}</span>
+        <span class="tchev">▶</span>
+      </button>
+      <div class="tb">
+        <div class="tgrid">
+          ${topics.map(t=>`
+            <div class="tc${t.cmp?' cmp':''}" onclick="sendPrompt('Explain this backend engineering topic in depth: ${t.n}')">
+              <div class="tn">
+                ${t.n}
+                ${t.p.includes('java')&&!t.p.includes('core')?'<span class="nb nb-java">java</span>':''}
+                ${t.p.includes('go')&&!t.p.includes('core')?'<span class="nb nb-go">go</span>':''}
+                ${t.p.includes('node')&&!t.p.includes('core')?'<span class="nb nb-node">node</span>':''}
+                ${t.cmp?'<span class="nb nb-cmp">vs</span>':''}
+              </div>
+              <div class="desc">${t.d}</div>
+              <div class="pills">${t.p.map(x=>`<span class="pill ${x}">${x}</span>`).join('')}</div>
+              ${t.cmp?`<div class="cmp-note">${t.cmp}</div>`:''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    root.appendChild(wrap);
+  });
+}
+
+function tog(btn){
+  const b=btn.nextElementSibling;
+  const c=btn.querySelector('.tchev');
+  const o=b.classList.toggle('op');
+  c.classList.toggle('op',o);
+}
+
+function filt(f,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  renderAll(f);
+}
+
+renderAll('all');
+</script>

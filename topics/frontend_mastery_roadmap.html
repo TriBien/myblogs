@@ -1,0 +1,221 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.header{padding:1.5rem 1.25rem 1rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.header h1{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.header p{font-size:13px;color:var(--color-text-secondary);margin-top:4px}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;padding:0.75rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.filter-btn{font-size:12px;padding:4px 10px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.filter-btn.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.tier{border-bottom:0.5px solid var(--color-border-tertiary)}
+.tier-header{display:flex;align-items:center;gap:10px;padding:0.75rem 1.25rem;cursor:pointer;user-select:none;background:transparent;border:none;width:100%;text-align:left}
+.tier-header:hover{background:var(--color-background-secondary)}
+.tier-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.tier-title{font-size:14px;font-weight:500;color:var(--color-text-primary);flex:1}
+.tier-meta{font-size:12px;color:var(--color-text-secondary)}
+.tier-chevron{font-size:12px;color:var(--color-text-tertiary);transition:transform .2s}
+.tier-chevron.open{transform:rotate(90deg)}
+.tier-body{display:none;padding:0 1.25rem 1rem}
+.tier-body.open{display:block}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:0.75rem}
+.topic-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;background:var(--color-background-primary);cursor:pointer;transition:border-color .15s}
+.topic-card:hover{border-color:var(--color-border-secondary)}
+.topic-card.new-topic{border-left:2px solid #1D9E75}
+.topic-name{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.new-badge{font-size:10px;padding:1px 5px;border-radius:3px;background:var(--color-background-success);color:var(--color-text-success);font-weight:500}
+.fw-badge{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.topic-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.pill{font-size:11px;padding:2px 7px;border-radius:10px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.pill.react{background:rgba(55,138,221,.08);border-color:rgba(55,138,221,.25);color:var(--color-text-info)}
+.pill.angular{background:rgba(226,75,74,.08);border-color:rgba(226,75,74,.25);color:var(--color-text-danger)}
+.pill.vue{background:rgba(29,158,117,.08);border-color:rgba(29,158,117,.25);color:var(--color-text-success)}
+.pill.core{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;padding:0.5rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+</style>
+<h2 class="sr-only">Senior Frontend Engineer Mastery Roadmap — interactive topic explorer with 8 tiers covering core browser internals, state management, React/Angular/Vue, performance, security, and production engineering.</h2>
+<div class="header">
+  <h1>Senior frontend engineer — mastery roadmap</h1>
+  <p>Reviewed & expanded · click any card to explore · green left border = added topic</p>
+</div>
+<div class="legend">
+  <div class="legend-item"><span class="pill core">core</span> Framework-agnostic</div>
+  <div class="legend-item"><span class="pill react">react</span> React-specific</div>
+  <div class="legend-item"><span class="pill angular">angular</span> Angular-specific</div>
+  <div class="legend-item"><span class="pill vue">vue</span> Vue-specific</div>
+  <div class="legend-item"><span style="display:inline-block;width:10px;height:10px;border-left:2px solid #1D9E75;margin-right:2px"></span> New topic</div>
+</div>
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterTier('all',this)">All tiers</button>
+  <button class="filter-btn" onclick="filterTier('core',this)">Core only</button>
+  <button class="filter-btn" onclick="filterTier('react',this)">React</button>
+  <button class="filter-btn" onclick="filterTier('angular',this)">Angular</button>
+  <button class="filter-btn" onclick="filterTier('vue',this)">Vue</button>
+  <button class="filter-btn" onclick="filterTier('new',this)">New additions</button>
+</div>
+<div id="tiers"></div>
+<script>
+const TIERS=[
+{id:1,color:"#E24B4A",label:"Tier 1",title:"Core runtime & browser",topics:[
+  {name:"Event loop & task queues",pills:["core"],detail:"Macro vs micro tasks, call stack, execution context. Foundation of all async reasoning.",isNew:false},
+  {name:"Closures & memory model",pills:["core"],detail:"Lexical scoping, closure traps, WeakRef, FinalizationRegistry. How GC decides what to free.",isNew:false},
+  {name:"Async control flow",pills:["core"],detail:"Promises, async/await, AbortController, cancellation patterns, error propagation chains.",isNew:false},
+  {name:"Browser rendering pipeline",pills:["core"],detail:"DOM → CSSOM → Render Tree → Layout → Paint → Composite. Reflow vs repaint vs composite-only.",isNew:false},
+  {name:"Layout thrashing & forced synchronous layout",pills:["core"],detail:"Read-write batching, requestAnimationFrame, ResizeObserver. How JS stalls paint.",isNew:false},
+  {name:"Web Workers & SharedArrayBuffer",pills:["core"],detail:"Off-main-thread computation, postMessage, transferable objects, SharedArrayBuffer + Atomics for lock-free concurrency.",isNew:true},
+  {name:"WASM integration",pills:["core"],detail:"When and how to use WebAssembly modules from JS. Memory model, import/export, streaming compile.",isNew:true},
+  {name:"HTTP/1.1 → HTTP/2 → HTTP/3",pills:["core"],detail:"Multiplexing, QUIC, HOL blocking, connection coalescing, 0-RTT. Affects bundle strategy.",isNew:false},
+  {name:"Caching layers",pills:["core"],detail:"Browser cache, service worker cache, CDN edge cache, Cache-Control directives, stale-while-revalidate.",isNew:false},
+  {name:"Browser security model",pills:["core"],detail:"Same-Origin Policy, CORS, HTTPS, HSTS, Sec-Fetch headers, iframe sandboxing.",isNew:false},
+  {name:"Storage APIs",pills:["core"],detail:"Cookie, localStorage, sessionStorage, IndexedDB, Cache API, OPFS. Capacity, persistence, thread access.",isNew:true},
+  {name:"Streams API",pills:["core"],detail:"ReadableStream, WritableStream, TransformStream. Progressive rendering, large payload handling.",isNew:true},
+  {name:"URL & navigation model",pills:["core"],detail:"pushState, replaceState, popstate, Navigation API. How SPAs hijack the browser's native model.",isNew:true},
+]},
+{id:2,color:"#EF9F27",label:"Tier 2",title:"State, data flow & UI architecture",topics:[
+  {name:"State taxonomy",pills:["core"],detail:"Local, lifted, global, server, URL, form state. Choosing the right home for each slice.",isNew:false},
+  {name:"Data normalization",pills:["core"],detail:"Flat vs nested, entity maps, relational shapes. Prevents derived-state bugs at scale.",isNew:false},
+  {name:"Race conditions & async correctness",pills:["core"],detail:"Cancellation, last-write-wins, request deduplication, optimistic update rollback.",isNew:false},
+  {name:"Stale data & freshness strategies",pills:["core"],detail:"Time-to-live, background revalidation, polling vs push, ETag/conditional requests.",isNew:false},
+  {name:"Component composition patterns",pills:["core"],detail:"Compound components, render props, slot-based composition, inversion of control.",isNew:false},
+  {name:"Controlled vs uncontrolled inputs",pills:["core"],detail:"Single source of truth tradeoffs. When uncontrolled is actually correct.",isNew:false},
+  {name:"Reactive data flow",pills:["core"],detail:"Unidirectional vs bidirectional flow. Derived state vs stored state. Push vs pull.",isNew:true},
+  {name:"Event-driven architecture in UI",pills:["core"],detail:"Custom events, EventEmitter, pub-sub between decoupled components, cross-tab messaging via BroadcastChannel.",isNew:true},
+  {name:"Form state management",pills:["core"],detail:"Validation strategies (schema-first vs imperative), dirty/touched tracking, async field validation, submission states.",isNew:true},
+]},
+{id:3,color:"#378ADD",label:"Tier 3",title:"React deep stack",topics:[
+  {name:"Fiber architecture",pills:["react"],detail:"Work units, priority lanes, time-slicing. Why render is interruptible but commit is not.",isNew:false},
+  {name:"Reconciliation algorithm",pills:["react"],detail:"Diffing heuristics, key semantics, bailout conditions. What triggers a re-render vs a re-mount.",isNew:false},
+  {name:"Hooks internals",pills:["react"],detail:"Dispatcher, hooks list, stale closures, why rules of hooks exist at the runtime level.",isNew:false},
+  {name:"useEffect lifecycle",pills:["react"],detail:"Mount, update, cleanup. Synchronizing with external systems. Effect vs event.",isNew:false},
+  {name:"useReducer & state machines",pills:["react"],detail:"When reducer > useState. XState / Zag integration for complex UI state.",isNew:true},
+  {name:"Context & performance",pills:["react"],detail:"Context propagation, bailout with memo, splitting contexts, use() for async context.",isNew:false},
+  {name:"Server components",pills:["react"],detail:"RSC protocol, async components, serialization constraints, client/server boundary.",isNew:false},
+  {name:"Concurrent features",pills:["react"],detail:"useTransition, useDeferredValue, Suspense boundaries, startTransition, priority scheduling.",isNew:false},
+  {name:"Error boundaries & suspense",pills:["react"],detail:"componentDidCatch, getDerivedStateFromError, Suspense + lazy, streaming SSR fallbacks.",isNew:false},
+  {name:"TanStack Query internals",pills:["react"],detail:"QueryClient cache, stale time, gc time, query key semantics, mutation side-effects, optimistic updates.",isNew:true},
+  {name:"Zustand / Jotai atom model",pills:["react"],detail:"Fine-grained subscriptions, selector slicing, atomic state composition. Why it beats a single big store.",isNew:true},
+  {name:"React compiler (Forget)",pills:["react"],detail:"Automatic memoization, what it can and cannot optimize, how it changes manual memo patterns.",isNew:true},
+  {name:"Next.js App Router model",pills:["react"],detail:"Layouts, nested routing, parallel routes, intercepting routes, streaming, fetch deduplication.",isNew:false},
+  {name:"Custom hooks architecture",pills:["react"],detail:"Encapsulation of side-effects, composability, testing strategy for custom hooks.",isNew:true},
+  {name:"Headless & compound components",pills:["react"],detail:"Radix, Headless UI, Ariakit. Separating behaviour from styling. Polymorphic `as` prop pattern.",isNew:false},
+]},
+{id:4,color:"#639922",label:"Tier 4",title:"Performance engineering",topics:[
+  {name:"React rendering optimization",pills:["react"],detail:"React.memo bailout conditions, useMemo/useCallback cost-benefit, when NOT to memoize.",isNew:false},
+  {name:"Bundle analysis & splitting",pills:["core"],detail:"Webpack bundle analyser, dynamic import(), route-level splitting, module federation.",isNew:false},
+  {name:"Tree shaking",pills:["core"],detail:"ESM static analysis, sideEffects package.json flag, barrel file anti-patterns.",isNew:false},
+  {name:"Virtualization",pills:["core"],detail:"TanStack Virtual, react-window. DOM node budgets, scroll anchoring, dynamic row heights.",isNew:false},
+  {name:"Web Vitals & Core Web Vitals",pills:["core"],detail:"LCP, FID/INP, CLS, TTFB. What each measures, how to diagnose, how to fix.",isNew:false},
+  {name:"Image & media optimization",pills:["core"],detail:"Responsive images, srcset/sizes, next/image, AVIF/WebP, lazy loading, LCP budget.",isNew:true},
+  {name:"Font loading strategy",pills:["core"],detail:"font-display, preload hints, FOUT vs FOIT, variable fonts, subsetting.",isNew:true},
+  {name:"Prefetch / preload / preconnect",pills:["core"],detail:"Resource hints, speculation rules API, <link rel=prefetch> for SPA transitions.",isNew:true},
+  {name:"Scheduler API & INP optimization",pills:["core"],detail:"scheduler.postTask(), isInputPending, yielding to the browser, long task attribution.",isNew:true},
+  {name:"Debounce / throttle / RAF",pills:["core"],detail:"When each applies: search input vs scroll vs animation. requestIdleCallback for non-critical work.",isNew:false},
+  {name:"GPU-friendly CSS properties",pills:["core"],detail:"transform, opacity, will-change, contain, content-visibility. Layer promotion heuristics.",isNew:false},
+  {name:"React Profiler & DevTools",pills:["react"],detail:"Flame graph, commit timeline, why-did-you-render, interaction tracing.",isNew:false},
+  {name:"Server-side rendering performance",pills:["core","react"],detail:"TTFB, streaming HTML, selective hydration, partial prerendering, edge rendering.",isNew:true},
+]},
+{id:5,color:"#D4537E",label:"Tier 5",title:"Security",topics:[
+  {name:"XSS — DOM & stored",pills:["core"],detail:"innerHTML sinks, dangerouslySetInnerHTML, DOMPurify, Trusted Types API.",isNew:false},
+  {name:"CSRF",pills:["core"],detail:"Double-submit cookie, synchronizer token, SameSite=Strict/Lax tradeoffs.",isNew:false},
+  {name:"Auth token storage",pills:["core"],detail:"HttpOnly cookie vs localStorage. XSS risk vs CSRF risk. BFF pattern for SPAs.",isNew:false},
+  {name:"Content Security Policy",pills:["core"],detail:"Restrict script sources, nonce-based CSP, report-only mode, Trusted Types enforcement.",isNew:false},
+  {name:"Clickjacking & frame protection",pills:["core"],detail:"X-Frame-Options, CSP frame-ancestors, iframe sandbox attribute.",isNew:true},
+  {name:"Dependency supply chain",pills:["core"],detail:"npm audit, lockfile integrity, Subresource Integrity for CDN scripts, Dependabot.",isNew:false},
+  {name:"OAuth2 / OIDC in SPAs",pills:["core"],detail:"PKCE flow, token refresh strategy, silent renew, logout federation.",isNew:true},
+  {name:"Prototype pollution",pills:["core"],detail:"__proto__ injection via merge utilities, Object.create(null) maps, JSON.parse sinks.",isNew:true},
+  {name:"Secrets & env vars",pills:["core"],detail:"Nothing secret belongs in frontend bundles. NEXT_PUBLIC_ vs private env distinction.",isNew:false},
+  {name:"Permissions & capabilities API",pills:["core"],detail:"Camera/mic/geolocation permissions, Feature Policy / Permissions-Policy header.",isNew:true},
+]},
+{id:6,color:"#7F77DD",label:"Tier 6",title:"Angular deep stack",topics:[
+  {name:"Dependency injection system",pills:["angular"],detail:"Hierarchical injectors, InjectionToken, useFactory, useExisting, tree-shakable providers.",isNew:false},
+  {name:"RxJS in Angular",pills:["angular"],detail:"Observable lifecycle, Subject types, async pipe, takeUntilDestroyed, common operators (switchMap, mergeMap, combineLatest).",isNew:false},
+  {name:"Change detection",pills:["angular"],detail:"Zone.js, ChangeDetectionStrategy.OnPush, markForCheck vs detectChanges, signal-based CD (Angular 17+).",isNew:false},
+  {name:"Signals (Angular 17+)",pills:["angular"],detail:"signal(), computed(), effect(), input signal, output signal. Zone-less reactivity model.",isNew:true},
+  {name:"Angular forms",pills:["angular"],detail:"Reactive vs template-driven. FormBuilder, validators, async validators, typed FormGroup.",isNew:true},
+  {name:"Routing & lazy loading",pills:["angular"],detail:"RouterModule, loadChildren with dynamic import, route guards, resolvers, deferrable views.",isNew:false},
+  {name:"Angular compiler & AOT",pills:["angular"],detail:"Ivy renderer, template type-checking, strictTemplates, NgModule vs standalone components.",isNew:true},
+  {name:"Angular animations",pills:["angular"],detail:"BrowserAnimationsModule, trigger/state/transition DSL, Web Animations API bridge.",isNew:true},
+  {name:"HttpClient & interceptors",pills:["angular"],detail:"Interceptor chain, token injection, retry/error handling, typed HTTP responses.",isNew:true},
+]},
+{id:7,color:"#1D9E75",label:"Tier 7",title:"Vue deep stack",topics:[
+  {name:"Reactivity system (Proxy)",pills:["vue"],detail:"reactive(), ref(), how Vue 3 tracks deps via Proxy traps. Why primitives need ref().",isNew:false},
+  {name:"Composition API",pills:["vue"],detail:"setup(), composables vs mixins, script setup sugar, defineProps/defineEmits.",isNew:false},
+  {name:"Vue Compiler & template transforms",pills:["vue"],detail:"v-if/v-for hoisting, static tree hoisting, cache handlers, compile-time optimizations.",isNew:true},
+  {name:"Pinia state management",pills:["vue"],detail:"Store definition, actions, getters, storeToRefs, plugin system. Why Pinia replaced Vuex.",isNew:true},
+  {name:"Vue Router 4",pills:["vue"],detail:"Navigation guards, lazy routes, typed routes (vue-router 4.4+), scroll behaviour.",isNew:true},
+  {name:"Suspense & async components",pills:["vue"],detail:"defineAsyncComponent, <Suspense> fallback slots, error boundaries in Vue.",isNew:true},
+  {name:"Teleport & provide/inject",pills:["vue"],detail:"Rendering outside DOM hierarchy, dependency injection without Vuex. Typed provide/inject.",isNew:true},
+  {name:"Vue directives",pills:["vue"],detail:"Custom directive lifecycle (beforeMount, mounted, beforeUpdate, updated, unmounted), binding modifiers.",isNew:true},
+  {name:"Nuxt 3 & server routes",pills:["vue"],detail:"Auto-imports, Nitro server engine, hybrid rendering (SSR/SSG/ISR), Nuxt modules.",isNew:true},
+]},
+{id:8,color:"#888780",label:"Tier 8",title:"Production & senior craft",topics:[
+  {name:"Testing strategy",pills:["core"],detail:"Unit (Vitest), integration (Testing Library), E2E (Playwright). Testing pyramid vs trophy. MSW for API mocking.",isNew:false},
+  {name:"Error handling & observability",pills:["core"],detail:"Error boundaries, global error handlers, Sentry source maps, structured logging, distributed tracing.",isNew:false},
+  {name:"Build systems",pills:["core"],detail:"Vite, Turbopack, Webpack 5. Module federation, build caching, custom plugins.",isNew:false},
+  {name:"CI/CD pipeline design",pills:["core"],detail:"Lint → type-check → test → build → preview deploy. Branch previews, feature flags.",isNew:false},
+  {name:"Accessibility (a11y)",pills:["core"],detail:"WCAG 2.2, ARIA roles/states/properties, keyboard navigation, focus management, screen-reader testing.",isNew:true},
+  {name:"Internationalisation (i18n)",pills:["core"],detail:"i18next/react-intl, plural rules, RTL layout, CLDR, dynamic locale loading.",isNew:true},
+  {name:"Design system architecture",pills:["core"],detail:"Tokens (design tokens), component API contracts, versioning, theming, Storybook-driven development.",isNew:false},
+  {name:"Micro-frontends",pills:["core"],detail:"Module Federation, single-spa, iframe isolation, shared dependency strategies, cross-MFE communication.",isNew:true},
+  {name:"SSR/CSR/SSG trade-offs",pills:["core"],detail:"Deciding per route. SEO, TTFB, hydration cost, edge rendering, partial prerendering.",isNew:false},
+  {name:"Feature flags & progressive delivery",pills:["core"],detail:"LaunchDarkly / Unleash patterns, flag-driven rollouts, A/B in frontend, avoiding flag debt.",isNew:true},
+  {name:"Performance budgets & regressions",pills:["core"],detail:"Lighthouse CI, bundlesize, Datadog RUM, alerting on Core Web Vitals regressions in CI.",isNew:true},
+  {name:"Debugging & tracing",pills:["core"],detail:"Chrome DevTools memory/performance panels, heap snapshots, long task attribution, network waterfall analysis.",isNew:false},
+  {name:"Cross-layer thinking",pills:["core"],detail:"How N+1 queries manifest in the UI, BFF pattern, API contract design from the frontend perspective.",isNew:false},
+  {name:"Architecture leadership",pills:["core"],detail:"ADRs, RFC process, incremental migration patterns, technical debt sequencing, engineering principles.",isNew:false},
+]},
+];
+
+function renderTiers(filter){
+  const container=document.getElementById('tiers');
+  container.innerHTML='';
+  TIERS.forEach(tier=>{
+    const topics=filter==='all'?tier.topics
+      :filter==='new'?tier.topics.filter(t=>t.isNew)
+      :tier.topics.filter(t=>t.pills.includes(filter));
+    if(!topics.length)return;
+    const div=document.createElement('div');
+    div.className='tier';
+    div.innerHTML=`
+      <button class="tier-header" onclick="toggleTier(this)">
+        <span class="tier-dot" style="background:${tier.color}"></span>
+        <span class="tier-title">${tier.label} — ${tier.title}</span>
+        <span class="tier-meta">${topics.length} topic${topics.length!==1?'s':''}</span>
+        <span class="tier-chevron">▶</span>
+      </button>
+      <div class="tier-body">
+        <div class="topic-grid">
+          ${topics.map(t=>`
+            <div class="topic-card${t.isNew?' new-topic':''}" onclick="sendPrompt('Explain this frontend topic in depth: ${t.name}')">
+              <div class="topic-name">
+                ${t.name}
+                ${t.isNew?'<span class="new-badge">new</span>':''}
+              </div>
+              <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.5">${t.detail}</div>
+              <div class="topic-pills">${t.pills.map(p=>`<span class="pill ${p}">${p}</span>`).join('')}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function toggleTier(btn){
+  const body=btn.nextElementSibling;
+  const chev=btn.querySelector('.tier-chevron');
+  const open=body.classList.toggle('open');
+  chev.classList.toggle('open',open);
+}
+
+function filterTier(f,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTiers(f);
+}
+
+renderTiers('all');
+</script>

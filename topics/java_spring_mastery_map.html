@@ -1,0 +1,233 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.hd{padding:1.2rem 1.25rem 0.7rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.hd h1{font-size:18px;font-weight:500}
+.hd p{font-size:13px;color:var(--color-text-secondary);margin-top:3px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;padding:0.5rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.controls{display:flex;gap:6px;flex-wrap:wrap;padding:0.6rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);align-items:center}
+.fb{font-size:12px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.fb.act{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.tw{border-bottom:0.5px solid var(--color-border-tertiary)}
+.thd{display:flex;align-items:center;gap:10px;padding:0.65rem 1.25rem;cursor:pointer;background:transparent;border:none;width:100%;text-align:left}
+.thd:hover{background:var(--color-background-secondary)}
+.tdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tname{font-size:14px;font-weight:500;flex:1;color:var(--color-text-primary)}
+.tmeta{font-size:12px;color:var(--color-text-tertiary)}
+.chev{font-size:11px;color:var(--color-text-tertiary);transition:transform .18s}
+.chev.o{transform:rotate(90deg)}
+.tbd{display:none;padding:0 1.25rem 0.9rem}
+.tbd.o{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:8px;margin-top:0.65rem}
+.card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:9px 11px;background:var(--color-background-primary);cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--color-border-secondary)}
+.card.p1{border-left:3px solid #E24B4A}
+.card.p2{border-left:3px solid #EF9F27}
+.card.p3{border-left:3px solid #378ADD}
+.card.p4{border-left:3px solid #888780}
+.cn{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:3px}
+.badge{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500;white-space:nowrap}
+.b-int{background:rgba(226,75,74,.1);color:#791F1F;border:0.5px solid rgba(226,75,74,.25)}
+.b-prod{background:rgba(29,158,117,.1);color:#085041;border:0.5px solid rgba(29,158,117,.25)}
+.b-arch{background:rgba(127,119,221,.1);color:#3C3489;border:0.5px solid rgba(127,119,221,.25)}
+.b-perf{background:rgba(186,117,23,.1);color:#633806;border:0.5px solid rgba(186,117,23,.25)}
+.b-sec{background:rgba(212,83,126,.1);color:#72243E;border:0.5px solid rgba(212,83,126,.25)}
+.desc{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.itip{font-size:11px;color:var(--color-text-danger);margin-top:5px;padding-top:4px;border-top:0.5px solid var(--color-border-tertiary);line-height:1.4}
+.ptip{font-size:11px;color:var(--color-text-success);margin-top:5px;padding-top:4px;border-top:0.5px solid var(--color-border-tertiary);line-height:1.4}
+.pdots{display:flex;align-items:center;gap:5px;margin-top:5px}
+.pl{font-size:11px;color:var(--color-text-tertiary);min-width:52px}
+.pds{display:flex;gap:3px}
+.pd{width:6px;height:6px;border-radius:50%}
+.pd.on1{background:#E24B4A}.pd.on2{background:#EF9F27}.pd.on3{background:#378ADD}.pd.off{background:var(--color-border-tertiary)}
+</style>
+<h2 class="sr-only">Java Spring mastery map — topics prioritized by production importance and interview frequency across 9 categories covering JVM internals, Spring ecosystem, data, security, distributed systems, and production engineering.</h2>
+<div class="hd">
+  <h1>Java Spring mastery map</h1>
+  <p>Prioritized for production-grade apps and senior/staff interviews · click any card to go deep</p>
+</div>
+<div class="legend">
+  <div class="li"><span class="dot" style="background:#E24B4A"></span>P1 — must know cold</div>
+  <div class="li"><span class="dot" style="background:#EF9F27"></span>P2 — expected at senior level</div>
+  <div class="li"><span class="dot" style="background:#378ADD"></span>P3 — differentiates top 10%</div>
+  <div class="li"><span class="dot" style="background:#888780"></span>P4 — awareness level</div>
+  <div class="li"><span class="badge b-int">interview</span>hot topic</div>
+  <div class="li"><span class="badge b-prod">production</span>daily craft</div>
+  <div class="li"><span class="badge b-arch">architecture</span>system design</div>
+  <div class="li"><span class="badge b-perf">perf</span>performance</div>
+  <div class="li"><span class="badge b-sec">security</span>security</div>
+</div>
+<div class="controls">
+  <button class="fb act" onclick="setF('all',this)">All</button>
+  <button class="fb" onclick="setF('p1',this)">P1 only</button>
+  <button class="fb" onclick="setF('int',this)">Interview hot</button>
+  <button class="fb" onclick="setF('prod',this)">Production</button>
+  <button class="fb" onclick="setF('arch',this)">Architecture</button>
+  <button class="fb" onclick="setF('perf',this)">Performance</button>
+  <button class="fb" onclick="setF('sec',this)">Security</button>
+</div>
+<div id="root"></div>
+<script>
+const DATA=[
+{id:1,color:"#E24B4A",label:"T1",title:"JVM internals — the 'why' layer",topics:[
+  {n:"JVM memory model & heap regions",p:1,tags:["interview","perf"],d:"Young Gen (Eden + Survivors S0/S1), Old Gen, Metaspace. Object allocation path, TLAB, promotion thresholds. Foundation for GC tuning and OutOfMemoryError diagnosis.",itip:"'Explain JVM memory structure' is a top-3 Java interview opener. Know each region, what lives there, and what goes wrong when it fills up."},
+  {n:"Garbage collectors — G1, ZGC, Shenandoah",p:1,tags:["interview","perf"],d:"G1: region-based, mixed collections, predictable pause targets (-XX:MaxGCPauseMillis). ZGC/Shenandoah: sub-millisecond pauses, concurrent compaction. When to choose each.",itip:"'When would you use ZGC over G1?' is a standard senior question. Answer from latency SLA requirements, not from defaults."},
+  {n:"JIT compilation — C1, C2, tiered",p:2,tags:["interview","perf"],d:"Interpretation → C1 (client, fast compile) → C2 (server, aggressive optimisation). Hot method detection, JIT thresholds, deoptimisation triggers. Why warmup time matters.",itip:"'Why is Java slow at startup but fast after warmup?' leads here. Know intrinsics, inlining, and why GraalVM JIT differs."},
+  {n:"Java Memory Model (JMM) & happens-before",p:1,tags:["interview"],d:"Visibility, reordering, happens-before edges. volatile guarantees (visibility + ordering, not atomicity). synchronized, final field semantics. Why double-checked locking was broken pre-Java 5.",itip:"'What does volatile guarantee?' is one of the most misunderstood questions. Many say 'thread safety' — correct answer: visibility and happens-before ordering, not atomicity."},
+  {n:"Class loading & ClassLoader hierarchy",p:2,tags:["interview"],d:"Bootstrap → Platform → Application loader. Delegation model. ClassLoader isolation (OSGi, app servers). Hot reload implications. ClassNotFoundException vs NoClassDefFoundError distinction.",itip:"'What is ClassLoader and why does it matter?' comes up in framework-design and OSGi/microservices contexts. Know isolation use cases."},
+  {n:"Stack vs heap, object layout",p:2,tags:["interview","perf"],d:"Object header (mark word + klass pointer), field alignment, padding. Stack frames, local variable table. Escape analysis and scalar replacement. How compact objects reduce GC pressure."},
+  {n:"JFR & async-profiler",p:2,tags:["perf","prod"],d:"Java Flight Recorder: low-overhead continuous profiling, event system, JDK Mission Control. async-profiler: wall-clock and CPU flame graphs without safepoint bias. Production profiling workflow.",ptip:"Essential for diagnosing production performance issues without adding overhead. Know how to enable JFR in production safely."},
+  {n:"GraalVM native image",p:3,tags:["interview","arch"],d:"AOT compilation, reflection/proxy config, build-time init vs runtime init. Startup time gains (ms vs seconds). Constraints: no dynamic class loading, limited reflection. Spring Native/Spring AOT support."},
+]},
+{id:2,color:"#D85A30",label:"T2",title:"Core Java — language mastery",topics:[
+  {n:"Generics — type erasure & wildcards",p:1,tags:["interview"],d:"Reification vs erasure, why List<String> == List<Integer> at runtime. Bounded wildcards (? extends T producer, ? super T consumer — PECS). Generic methods, type inference limits.",itip:"'Why can't you do new T[]?' and 'Explain PECS' are classic senior interview questions. Most developers use generics but cannot explain erasure."},
+  {n:"Concurrency — java.util.concurrent",p:1,tags:["interview","prod"],d:"ConcurrentHashMap internals (segmented locking → CAS), AtomicLong vs LongAdder, BlockingQueue implementations. ExecutorService lifecycle, ThreadPoolExecutor queue strategies, rejection policies.",itip:"'How does ConcurrentHashMap work?' is asked constantly. Know the difference between size(), contains(), and compound-action atomicity."},
+  {n:"Virtual threads (Project Loom, Java 21)",p:1,tags:["interview","perf"],d:"Carrier threads, ~KB stack vs ~MB OS thread stack. Pinning (synchronized, native frames). Structured concurrency (JDK 21). ScopedValue replacing ThreadLocal. Spring Boot 3.2 virtual thread support.",itip:"'How do virtual threads differ from platform threads?' is now standard. Know pinning gotchas — synchronized blocks pin, ReentrantLock does not."},
+  {n:"Records, sealed classes, pattern matching",p:2,tags:["interview","prod"],d:"Records: transparent data carriers, compact constructors, withers pattern. Sealed: exhaustive switch, domain ADTs. Pattern matching: instanceof patterns, deconstruction (Java 21+), guard patterns.",itip:"'How would you model a Result<T> type in modern Java?' — sealed classes + pattern matching is the answer. Shows Java 17-21 fluency."},
+  {n:"Streams & collectors — advanced",p:1,tags:["interview","prod"],d:"Lazy evaluation pipeline, spliterator, parallel stream correctness (stateless, non-interfering, associative). Custom Collectors. Collector.of(). teeing(), groupingBy with downstream collectors.",itip:"'When should you NOT use parallel streams?' is a trap. Answer: small data sets, I/O-bound tasks, ordered pipelines — all hurt or break."},
+  {n:"CompletableFuture — full API",p:1,tags:["interview","prod"],d:"thenApply (transform) vs thenCompose (flatMap), thenCombine for parallel composition, exceptionally/handle for error recovery, allOf/anyOf, custom executor threading, timeout with orTimeout().",itip:"'How do you run two tasks in parallel and combine results?' — thenCombine or CompletableFuture.allOf(). Know which thread executes thenApply without executor argument."},
+  {n:"Optional — correct usage",p:2,tags:["interview","prod"],d:"Return type for nullable APIs, not field type. Never Optional.get() without isPresent(). map/flatMap/orElseGet/orElseThrow chains. Why Optional in method parameters is an anti-pattern.",itip:"'What's wrong with this code: Optional.get()?' — NullPointerException risk. Know the correct API: orElseThrow with descriptive supplier."},
+  {n:"Functional interfaces & lambdas internals",p:2,tags:["interview"],d:"invokedynamic, lambda metafactory, why lambdas are not anonymous inner classes (no separate .class file). Effectively final capture. Method references — four kinds and their equivalences."},
+  {n:"Modules (JPMS)",p:3,tags:["interview"],d:"module-info.java, requires/exports/opens. Strong encapsulation of JDK internals (--add-opens migration). jlink for custom minimal runtimes. Layered classloaders."},
+]},
+{id:3,color:"#BA7517",label:"T3",title:"Spring Core — internals & patterns",topics:[
+  {n:"IoC container & bean lifecycle",p:1,tags:["interview","prod"],d:"BeanDefinition, BeanFactory vs ApplicationContext, bean scopes (singleton, prototype, request, session, custom). Lifecycle: instantiation → populate → Aware callbacks → @PostConstruct → use → @PreDestroy.",itip:"'Explain the Spring bean lifecycle' is the most common Spring interview question. Know each phase and where BeanPostProcessor hooks in."},
+  {n:"Dependency injection — internals",p:1,tags:["interview","prod"],d:"Constructor vs setter vs field injection (constructor is testable, field injection bypasses immutability). @Autowired resolution order: type → qualifier → name. Circular dependency detection and workarounds.",itip:"'Why prefer constructor injection?' — immutability, testability without Spring container, required deps explicit. Know when @Lazy breaks circular deps."},
+  {n:"BeanPostProcessor & BeanFactoryPostProcessor",p:2,tags:["interview"],d:"BPP: intercepts bean instances post-construction (wraps with proxy). BFPP: modifies BeanDefinitions before instantiation. These two interfaces are the foundation of AOP, @Transactional, @Async, and @Cacheable.",itip:"'How does @Transactional work internally?' — BPP creates a JDK/CGLIB proxy around your bean. Understanding this explains every Spring proxy limitation."},
+  {n:"AOP — proxies & weaving",p:1,tags:["interview","prod"],d:"JDK dynamic proxy (interface-based) vs CGLIB (class-based, Spring default). Proxy limitations: self-invocation, final classes, private methods. AspectJ LTW for method-level pointcuts on non-proxy calls.",itip:"'Why doesn't @Transactional work on a private method?' — proxy cannot intercept it. This proxy mental model unlocks understanding of every Spring annotation."},
+  {n:"@Transactional — full depth",p:1,tags:["interview","prod"],d:"Propagation (REQUIRED, REQUIRES_NEW, NESTED, SUPPORTS, NOT_SUPPORTED, MANDATORY, NEVER). Isolation levels mapped to DB locks. readOnly optimisation. rollbackFor — Checked exceptions don't rollback by default.",itip:"'What happens when a @Transactional method calls another @Transactional method in the same class?' — self-invocation bypasses proxy, inner annotation is ignored. Top-5 interview trap."},
+  {n:"Spring Boot autoconfiguration",p:1,tags:["interview","prod"],d:"@EnableAutoConfiguration, spring.factories / META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports (Boot 3). @Conditional variants. How to write custom starters. spring-boot-autoconfigure-processor.",itip:"'How does Spring Boot know which beans to create?' — autoconfiguration + @Conditional. Knowing how to write a custom starter shows deep fluency."},
+  {n:"Configuration & property binding",p:2,tags:["prod"],d:"@ConfigurationProperties with validation (@Validated + @NotNull). Relaxed binding (kebab-case, SNAKE_CASE, camelCase). Profile-specific files (application-{profile}.yml). Spring Cloud Config for external config.",ptip:"@ConfigurationProperties over @Value for structured config — type-safe, validatable, easily testable."},
+  {n:"Events & ApplicationContext",p:2,tags:["interview","prod"],d:"ApplicationEventPublisher, @EventListener, @TransactionalEventListener (AFTER_COMMIT phase), async events (@Async). Custom ApplicationEvents for loose coupling between Spring beans."},
+  {n:"Spring Expression Language (SpEL)",p:3,tags:["prod"],d:"Used inside @Value, @Cacheable(key=), @PreAuthorize, @ConditionalOnExpression. Method execution, bean reference (#beanName), collection projection/selection. Security implications of user-controlled SpEL."},
+]},
+{id:4,color:"#1D9E75",label:"T4",title:"Spring Web & API layer",topics:[
+  {n:"DispatcherServlet & MVC pipeline",p:1,tags:["interview","prod"],d:"Request lifecycle: DispatcherServlet → HandlerMapping → HandlerAdapter → Handler → HandlerInterceptor → ViewResolver. How @ControllerAdvice hooks in. Difference from Spring WebFlux's DispatcherHandler.",itip:"'What happens when a request arrives at a Spring MVC app?' is a classic interview walkthrough. Know every component in the pipeline."},
+  {n:"Spring WebFlux & Project Reactor",p:2,tags:["interview","perf","arch"],d:"Mono/Flux, operator fusion, schedulers (boundedElastic, parallel, single). Backpressure propagation. When reactive is worth it: I/O-bound, high concurrency, streaming. When it hurts: CPU-bound, simple CRUD.",itip:"'Should you use WebFlux or MVC?' — answer from concurrency model and team familiarity, not hype. Virtual threads in MVC now close much of the gap."},
+  {n:"RestTemplate → WebClient → RestClient",p:2,tags:["interview","prod"],d:"RestTemplate: deprecated for reactive. WebClient: reactive, non-blocking, also usable in MVC. RestClient (Spring 6.1): synchronous, fluent, replaces RestTemplate. Know which to use when.",itip:"'RestTemplate is deprecated — what do you use?' — RestClient for sync, WebClient for reactive. Knowing the migration story shows recency."},
+  {n:"Exception handling — @ControllerAdvice",p:1,tags:["interview","prod"],d:"@ExceptionHandler resolution order (local → @ControllerAdvice). ProblemDetail (RFC 7807, Spring 6). Structured error responses. Validation errors (@MethodArgumentNotValidException). Mapping vs status codes.",itip:"Production-critical. 'How do you centralise error handling?' — @ControllerAdvice + @ExceptionHandler + ProblemDetail."},
+  {n:"Validation — Bean Validation + Spring",p:1,tags:["prod"],d:"@Valid vs @Validated (groups). ConstraintValidator for custom rules. Cross-field validation (@ScriptAssert risk). Cascaded validation on nested objects. Programmatic validation with Validator."},
+  {n:"Content negotiation & serialisation",p:2,tags:["prod","interview"],d:"HttpMessageConverter chain, MappingJackson2HttpMessageConverter config. Jackson: @JsonIgnoreProperties, @JsonInclude, custom serialisers, @JsonView for partial responses, polymorphic type handling."},
+  {n:"Filter vs Interceptor vs AOP",p:2,tags:["interview"],d:"Filter (Servlet level, before Spring): auth, CORS, logging. Interceptor (Spring MVC, after DispatcherServlet): pre/postHandle, afterCompletion. AOP (bean method level). Know where each belongs.",itip:"'Where would you add request logging?' — Filter for raw request/response, Interceptor for MVC context (path variables), AOP for service-level cross-cutting."},
+  {n:"Async MVC — @Async, DeferredResult, SSE",p:3,tags:["perf","prod"],d:"@Async with custom executor. DeferredResult/Callable for releasing MVC thread. SseEmitter for server-sent events. Spring 6 HTTP Interface (declarative clients). Virtual thread alternative."},
+]},
+{id:5,color:"#378ADD",label:"T5",title:"Data & persistence",topics:[
+  {n:"Spring Data JPA — internals",p:1,tags:["interview","prod"],d:"SimpleJpaRepository, Hibernate session flush modes, EntityManager lifecycle per-request. JPQL vs Criteria API vs native queries. @Query, @Modifying, @Transactional on repository methods.",itip:"'What is the N+1 problem and how do you fix it?' is the most common JPA interview question. Know: detect with Hibernate statistics, fix with JOIN FETCH / EntityGraph / batch size."},
+  {n:"N+1 detection & elimination",p:1,tags:["interview","prod","perf"],d:"Hibernate statistics (spring.jpa.properties.hibernate.generate_statistics=true), p6spy, datasource-proxy. Solutions: JOIN FETCH, @EntityGraph, batch fetching (@BatchSize), projections (DTOs), blaze-persistence.",itip:"Candidates who cannot explain N+1 with an example fail most JPA interviews. Prepare a concrete scenario: Order has many OrderItems — lazy load inside loop = N+1."},
+  {n:"Hibernate caching — L1 & L2",p:2,tags:["interview","perf"],d:"L1 (Session cache): always on, scope is transaction. L2 (SessionFactory cache): shared, opt-in per entity. Ehcache/Caffeine/Redis as L2 provider. Query cache: dangerous by default. Cache invalidation strategies.",itip:"'What is the Hibernate first-level cache?' — every EntityManager has one, explains why a find() in the same transaction doesn't hit the DB twice."},
+  {n:"Transaction management deep dive",p:1,tags:["interview","prod"],d:"PlatformTransactionManager implementations. Declarative vs programmatic (TransactionTemplate). Savepoints. @TransactionalEventListener(phase=AFTER_COMMIT). Distributed transactions: XA vs Saga.",itip:"Paired with @Transactional internals. Know what happens when an exception is thrown inside a transaction, what rollbackFor covers, and what doesn't trigger rollback."},
+  {n:"Connection pool — HikariCP",p:1,tags:["prod","perf"],d:"Pool sizing: (core_count * 2 + effective_spindle_count). connectionTimeout vs idleTimeout vs maxLifetime. Pool exhaustion symptoms (HikariPool-1 - Connection is not available). Metrics via Micrometer.",ptip:"Wrong pool size is the #1 cause of production DB performance issues. Know Little's Law: concurrency = throughput × latency."},
+  {n:"Database migrations — Flyway / Liquibase",p:1,tags:["prod"],d:"Flyway: SQL-first, versioned migrations (V1__desc.sql), repeatable (R__), undo (paid). Zero-downtime: expand-contract pattern, backward-compatible changes. Liquibase: XML/YAML/JSON changesets, rollback support.",ptip:"Zero-downtime migration is mandatory in production. Expanding (add column nullable) before contracting (remove old column) after all deploys succeed."},
+  {n:"Spring Data projections & DTOs",p:2,tags:["prod","perf"],d:"Interface projections (closed, open with SpEL), class-based DTOs (@Query with constructor expression), dynamic projections. Avoid selecting full entities when only 2 columns are needed."},
+  {n:"NoSQL integration",p:2,tags:["prod","arch"],d:"Spring Data MongoDB (reactive + blocking), Spring Data Redis (RedisTemplate, @Cacheable with Redis), Spring Data Elasticsearch. Repository abstraction across stores. Transaction support limitations."},
+  {n:"QueryDSL / JOOQ / Blaze-Persistence",p:3,tags:["prod"],d:"Type-safe query building. JOOQ: generates classes from schema, closest to SQL control. Blaze-Persistence: JPA extensions (CTEs, window functions, keyset pagination). When ORM abstraction breaks down."},
+]},
+{id:6,color:"#534AB7",label:"T6",title:"Spring Security",topics:[
+  {n:"Security filter chain architecture",p:1,tags:["interview","sec","prod"],d:"SecurityFilterChain, FilterChainProxy, DelegatingFilterProxy. Order matters: each filter calls chain.doFilter() or short-circuits. SecurityContextHolder (ThreadLocal, InheritableThreadLocal for async).",itip:"'How does Spring Security work at the filter level?' is asked at every senior security question. Know that authentication and authorisation are separate filter concerns."},
+  {n:"OAuth2 Resource Server — JWT validation",p:1,tags:["interview","sec","prod"],d:"spring-security-oauth2-resource-server. JwtDecoder, NimbusJwtDecoder, JWK Set URI. Algorithm confusion attacks (alg:none). iss/aud validation. Custom claim extraction. Opaque token introspection.",itip:"'How do you secure a REST API with JWT?' is the most common security interview question. Know the full validation chain: signature → expiry → issuer → audience."},
+  {n:"OAuth2 Client — PKCE & flows",p:2,tags:["interview","sec","prod"],d:"Authorization Code + PKCE (SPAs), Client Credentials (service-to-service), password grant (legacy). Spring's OAuth2AuthorizedClientManager. Token refresh, client registration, Keycloak/Auth0 integration."},
+  {n:"Method security — @PreAuthorize",p:1,tags:["interview","sec","prod"],d:"@EnableMethodSecurity (replaces @EnableGlobalMethodSecurity). @PreAuthorize SpEL: hasRole, hasAuthority, #paramName for param-based rules, @bean.method() for service delegation. @PostFilter/@PostAuthorize.",itip:"'How do you implement row-level security?' — @PostFilter on collection returns, or @PreAuthorize with custom SpEL bean that queries ownership."},
+  {n:"CSRF, CORS, security headers",p:1,tags:["sec","prod"],d:"CSRF: when to enable (stateful sessions) vs disable (stateless JWT). SameSite cookie. CORS: CorsConfigurationSource, allowedOrigins, credentialed requests. Security headers: HSTS, X-Frame-Options, CSP, Referrer-Policy via HeadersConfigurer.",ptip:"Always configure security headers via Spring Security — they must be consistent across all endpoints, not per-controller."},
+  {n:"Password encoding & secrets",p:2,tags:["sec","prod"],d:"BCryptPasswordEncoder (cost factor 10+), DelegatingPasswordEncoder for migration. Never MD5/SHA1 for passwords. Spring Cloud Vault / AWS Secrets Manager integration. Secrets in env vars, not application.yml."},
+  {n:"Security testing",p:2,tags:["sec","prod"],d:"@WithMockUser, @WithSecurityContext. MockMvc + Spring Security integration. Testing @PreAuthorize rules. Security integration tests in CI. OWASP ZAP for API scanning."},
+]},
+{id:7,color:"#D4537E",label:"T7",title:"Messaging & async",topics:[
+  {n:"Spring Kafka — producer & consumer",p:1,tags:["interview","prod","arch"],d:"KafkaTemplate, @KafkaListener, consumer groups, manual offset commit (AckMode.MANUAL). Retry (SeekToCurrentErrorHandler, DeadLetterPublishingRecoverer). Idempotent consumers. Transactions across DB + Kafka (outbox pattern).",itip:"'How do you guarantee at-least-once delivery with Kafka?' — idempotent consumer + manual ack. 'How do you prevent duplicate processing?' — idempotency key table."},
+  {n:"Outbox pattern",p:2,tags:["interview","prod","arch"],d:"Write event to outbox table in same DB transaction as domain change. Separate relay reads outbox and publishes to broker. Guarantees at-least-once without distributed transaction. Debezium CDC as relay.",itip:"'How do you guarantee event publication when your service crashes after DB commit?' — outbox pattern. Shows distributed systems awareness."},
+  {n:"Spring AMQP / RabbitMQ",p:2,tags:["prod"],d:"Exchange types (direct, topic, fanout, headers), binding keys, DLX/DLQ config, message TTL, quorum queues (HA replacement), @RabbitListener retry with RejectAndDontRequeueRecoverer."},
+  {n:"@Async & task execution",p:2,tags:["interview","prod"],d:"@EnableAsync, custom ThreadPoolTaskExecutor (coreSize, maxSize, queueCapacity), exception handling (AsyncUncaughtExceptionHandler), propagation of SecurityContext and MDC. Virtual thread executor alternative.",itip:"'What happens when you throw an exception inside an @Async method?' — caller never sees it unless you use Future/CompletableFuture return type. Know AsyncUncaughtExceptionHandler."},
+  {n:"Scheduler — @Scheduled & Quartz",p:2,tags:["prod"],d:"@Scheduled (cron, fixedRate, fixedDelay), ShedLock for distributed locking of scheduled tasks. Quartz for persistent, clustered, misfire-handling job scheduling. When Quartz is overkill."},
+  {n:"Spring Integration & EIP patterns",p:3,tags:["arch"],d:"Message channels, transformers, filters, routers, aggregators. Enterprise Integration Patterns in code. When to use vs Kafka Streams vs Camel."},
+]},
+{id:8,color:"#993C1D",label:"T8",title:"Distributed systems & microservices",topics:[
+  {n:"Service discovery & load balancing",p:2,tags:["interview","arch","prod"],d:"Spring Cloud LoadBalancer (replaces Ribbon). Eureka/Consul registration. Client-side vs server-side LB. Kubernetes: Service DNS + kube-proxy renders most service discovery libraries redundant."},
+  {n:"Circuit breaker — Resilience4j",p:1,tags:["interview","prod","arch"],d:"Circuit states (closed → open → half-open). Sliding window (count vs time). TimeLimiter, Retry, Bulkhead (ThreadPool + Semaphore). @CircuitBreaker annotation. Actuator metrics integration.",itip:"'How do you prevent a slow downstream from taking down your service?' — circuit breaker + bulkhead + timeout. Know all three, not just circuit breaker alone."},
+  {n:"Distributed tracing — OpenTelemetry",p:2,tags:["prod","arch"],d:"Micrometer Tracing (Spring Boot 3, replaces Sleuth). OTel SDK, trace/span propagation via W3C TraceContext headers. OTLP exporter to Jaeger/Tempo. Baggage for cross-service context."},
+  {n:"API Gateway patterns",p:2,tags:["arch","interview"],d:"Spring Cloud Gateway: route predicates, filters (AddRequestHeader, RewritePath, CircuitBreaker, RequestRateLimiter). Token relay. When Gateway is overkill vs Kubernetes Ingress."},
+  {n:"Saga pattern — choreography vs orchestration",p:2,tags:["interview","arch"],d:"Choreography: events trigger next step (loose coupling, hard to trace). Orchestration: saga orchestrator calls each step (explicit flow, central failure handling). Temporal/Conductor for orchestration.",itip:"'How do you handle distributed transactions without 2PC?' — Saga. Know both variants and when each breaks down (compensating transactions, idempotency requirements)."},
+  {n:"gRPC with Spring",p:2,tags:["prod","arch"],d:"grpc-spring-boot-starter, protobuf IDL, unary + server streaming + bidi streaming. Interceptors for auth/tracing. vs REST: when strict contracts, binary efficiency, and streaming matter."},
+  {n:"Event sourcing & CQRS",p:3,tags:["arch","interview"],d:"Axon Framework for Java. Aggregate root, command bus, event store, projections. Eventual consistency implications. Snapshot strategy. When CQRS complexity is justified vs simple CRUD."},
+  {n:"Spring Cloud Config & secrets",p:2,tags:["prod"],d:"Config server with Git/Vault backend. @RefreshScope for runtime config updates. Bootstrap context (legacy) vs spring.config.import (modern). Encrypt/decrypt config values."},
+]},
+{id:9,color:"#444441",label:"T9",title:"Production engineering & senior craft",topics:[
+  {n:"Observability — metrics, logs, traces",p:1,tags:["interview","prod","arch"],d:"Micrometer for metrics (Prometheus + Grafana). Logback structured JSON (logstash-logback-encoder). MDC for request-scoped context (traceId, userId). Correlation IDs across services. Three pillars must work together.",itip:"'How do you debug a production issue in a microservices system?' — trace ID in every log line, span timeline to find latency, metrics for pattern. Know all three, not just logs."},
+  {n:"Spring Boot Actuator — full depth",p:1,tags:["interview","prod"],d:"Health indicators (custom HealthIndicator for DB, cache, external APIs). Info endpoint. Prometheus /actuator/prometheus. Exposing vs securing endpoints. Shutdown endpoint (disabled by default — enable carefully).",itip:"'How do you check the health of a Spring Boot application?' — Actuator /health. Know how to write a custom HealthIndicator that aggregates dependency health."},
+  {n:"Kubernetes deployment — JVM tuning",p:1,tags:["prod","perf"],d:"-XX:+UseContainerSupport (enabled by default Java 10+). -XX:MaxRAMPercentage=75 instead of -Xmx. CPU throttling and CFS quota impact on GC. Liveness vs readiness probes: readiness gates startup, liveness restarts on deadlock.",itip:"'How do you deploy a Java app to Kubernetes?' — CPU/memory requests+limits, MaxRAMPercentage, readiness probe path, graceful shutdown (SIGTERM → drain)."},
+  {n:"Graceful shutdown",p:1,tags:["prod"],d:"server.shutdown=graceful (waits for in-flight requests). spring.lifecycle.timeout-per-shutdown-phase (default 30s). @PreDestroy order. Kafka consumer: commitSync before shutdown. k8s terminationGracePeriodSeconds alignment.",ptip:"Graceful shutdown is non-negotiable in production. Without it, rolling deploys cause in-flight request errors and uncommitted offsets."},
+  {n:"Testing strategy — pyramid",p:1,tags:["interview","prod"],d:"Unit (Mockito, no Spring context — fast). Slice tests (@WebMvcTest, @DataJpaTest, @JsonTest — partial context). Integration (@SpringBootTest + Testcontainers for real DB). Contract (Spring Cloud Contract / Pact).",itip:"'How do you structure tests in a Spring Boot app?' — know all four levels, know that @SpringBootTest is slow and should be at the top of the pyramid, not the default."},
+  {n:"Testcontainers",p:2,tags:["prod"],d:"Real DB/broker in tests. @Testcontainers + @Container. Singleton pattern (static container shared across test class). JUnit 5 + Spring Boot 3.1 @ServiceConnection autoconfiguration. Replaces H2 in-memory DB lies."},
+  {n:"Performance testing — Gatling / k6",p:2,tags:["perf","prod"],d:"Gatling (Scala/Java DSL, rich HTML reports). k6 (JS DSL, Prometheus integration). Load ramp-up scenarios, percentile latency targets (p99), saturation point identification, regression gating in CI."},
+  {n:"Security scanning & SBOM",p:2,tags:["sec","prod"],d:"Dependency check (OWASP), Trivy for container image scanning, Grype. SBOM generation (CycloneDX Maven plugin). CVE-driven upgrade policy. Spring Boot dependency management as security baseline."},
+  {n:"Build & CI/CD pipeline",p:2,tags:["prod"],d:"Maven vs Gradle (build cache, incremental compilation, configuration cache). Jib for Docker builds without Dockerfile. Multi-stage Dockerfiles. GH Actions / GitLab CI. Preview environments. Feature flag release decoupling.",ptip:"Jib (containerise without Docker daemon, no Dockerfile) drastically simplifies CI/CD. Know it as an alternative to Docker multi-stage builds."},
+  {n:"Architecture trade-off communication",p:1,tags:["interview","arch"],d:"ADRs for decisions. Articulating: synchronous vs async coupling, monolith extraction timing (strangler fig), when microservices hurt more than help, REST vs gRPC vs messaging trade-offs. This is what 10yr means.",itip:"The clearest senior signal: a candidate who answers 'it depends' and then explains the axes of the decision. Not 'use Kafka' but 'Kafka when you need fan-out, replay, or decoupling from consumer availability'."},
+]},
+];
+
+function pc(p){return p===1?'p1':p===2?'p2':p===3?'p3':'p4'}
+function dots(p){
+  const lbl=p===1?'must know':p===2?'expected':p===3?'top 10%':'awareness';
+  const ds=[1,2,3].map(i=>`<span class="pd ${i<=p&&p<=3?'on'+p:'off'}"></span>`).join('');
+  return `<div class="pdots"><span class="pl">${lbl}</span><div class="pds">${ds}</div></div>`;
+}
+
+function render(filter){
+  const root=document.getElementById('root');
+  root.innerHTML='';
+  DATA.forEach(tier=>{
+    let topics=tier.topics;
+    if(filter==='p1') topics=topics.filter(t=>t.p===1);
+    else if(filter==='int') topics=topics.filter(t=>t.tags.includes('interview'));
+    else if(filter==='prod') topics=topics.filter(t=>t.tags.includes('prod')||t.tags.includes('production'));
+    else if(filter==='arch') topics=topics.filter(t=>t.tags.includes('arch')||t.tags.includes('architecture'));
+    else if(filter==='perf') topics=topics.filter(t=>t.tags.includes('perf'));
+    else if(filter==='sec') topics=topics.filter(t=>t.tags.includes('sec')||t.tags.includes('security'));
+    if(!topics.length)return;
+    const w=document.createElement('div');
+    w.className='tw';
+    w.innerHTML=`
+      <button class="thd" onclick="tog(this)">
+        <span class="tdot" style="background:${tier.color}"></span>
+        <span class="tname">${tier.label} — ${tier.title}</span>
+        <span class="tmeta">${topics.length} topic${topics.length!==1?'s':''}</span>
+        <span class="chev">▶</span>
+      </button>
+      <div class="tbd">
+        <div class="grid">
+          ${topics.map(t=>`
+            <div class="card ${pc(t.p)}" onclick="sendPrompt('Explain this Java Spring topic in depth for a 10-year senior engineer: ${t.n}')">
+              <div class="cn">
+                ${t.n}
+                ${t.tags.includes('interview')?'<span class="badge b-int">interview</span>':''}
+                ${(t.tags.includes('prod')||t.tags.includes('production'))?'<span class="badge b-prod">production</span>':''}
+                ${(t.tags.includes('arch')||t.tags.includes('architecture'))?'<span class="badge b-arch">architecture</span>':''}
+                ${t.tags.includes('perf')?'<span class="badge b-perf">perf</span>':''}
+                ${(t.tags.includes('sec')||t.tags.includes('security'))?'<span class="badge b-sec">security</span>':''}
+              </div>
+              <div class="desc">${t.d}</div>
+              ${dots(t.p)}
+              ${t.itip?`<div class="itip">Interview: ${t.itip}</div>`:''}
+              ${t.ptip?`<div class="ptip">Production: ${t.ptip}</div>`:''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    root.appendChild(w);
+  });
+}
+
+function tog(btn){
+  const b=btn.nextElementSibling;
+  const c=btn.querySelector('.chev');
+  b.classList.toggle('o');
+  c.classList.toggle('o',b.classList.contains('o'));
+}
+function setF(f,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  render(f);
+}
+render('all');
+</script>

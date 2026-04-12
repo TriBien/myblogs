@@ -1,0 +1,225 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.hd{padding:1.2rem 1.25rem 0.7rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.hd h1{font-size:18px;font-weight:500}
+.hd p{font-size:13px;color:var(--color-text-secondary);margin-top:3px}
+.controls{display:flex;gap:6px;flex-wrap:wrap;padding:0.6rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);align-items:center}
+.fb{font-size:12px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.fb.act{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.sep{width:0.5px;height:18px;background:var(--color-border-tertiary);margin:0 2px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;padding:0.5rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.tier-wrap{border-bottom:0.5px solid var(--color-border-tertiary)}
+.tier-hd{display:flex;align-items:center;gap:10px;padding:0.65rem 1.25rem;cursor:pointer;background:transparent;border:none;width:100%;text-align:left}
+.tier-hd:hover{background:var(--color-background-secondary)}
+.tdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tname{font-size:14px;font-weight:500;flex:1}
+.tmeta{font-size:12px;color:var(--color-text-tertiary)}
+.chev{font-size:11px;color:var(--color-text-tertiary);transition:transform .18s}
+.chev.o{transform:rotate(90deg)}
+.tbody{display:none;padding:0 1.25rem 0.9rem}
+.tbody.o{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:8px;margin-top:0.65rem}
+.card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:9px 11px;background:var(--color-background-primary);cursor:pointer;transition:border-color .15s;position:relative}
+.card:hover{border-color:var(--color-border-secondary)}
+.card.p1{border-left:3px solid #E24B4A}
+.card.p2{border-left:3px solid #EF9F27}
+.card.p3{border-left:3px solid #378ADD}
+.card.p4{border-left:3px solid #888780}
+.cname{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:3px}
+.badge{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500;white-space:nowrap}
+.b-int{background:rgba(226,75,74,.1);color:#791F1F;border:0.5px solid rgba(226,75,74,.25)}
+.b-prod{background:rgba(29,158,117,.1);color:#085041;border:0.5px solid rgba(29,158,117,.25)}
+.b-arch{background:rgba(127,119,221,.1);color:#3C3489;border:0.5px solid rgba(127,119,221,.25)}
+.b-perf{background:rgba(186,117,23,.1);color:#633806;border:0.5px solid rgba(186,117,23,.25)}
+.desc{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.itip{font-size:11px;color:var(--color-text-danger);margin-top:5px;padding-top:4px;border-top:0.5px solid var(--color-border-tertiary);line-height:1.4}
+.ptip{font-size:11px;color:var(--color-text-success);margin-top:5px;padding-top:4px;border-top:0.5px solid var(--color-border-tertiary);line-height:1.4}
+.prio-bar{display:flex;align-items:center;gap:6px;margin-top:5px}
+.prio-label{font-size:11px;color:var(--color-text-tertiary);min-width:52px}
+.prio-dots{display:flex;gap:3px}
+.pd{width:6px;height:6px;border-radius:50%}
+.pd.on-1{background:#E24B4A}
+.pd.on-2{background:#EF9F27}
+.pd.on-3{background:#378ADD}
+.pd.off{background:var(--color-border-tertiary)}
+</style>
+<h2 class="sr-only">React mastery map — topics prioritized by production importance and interview frequency across 8 categories.</h2>
+<div class="hd">
+  <h1>React mastery map</h1>
+  <p>Prioritized for production grade apps and senior interviews · click any card to go deep</p>
+</div>
+<div class="legend">
+  <div class="li"><span class="dot" style="background:#E24B4A"></span>P1 — must know cold</div>
+  <div class="li"><span class="dot" style="background:#EF9F27"></span>P2 — expected at senior level</div>
+  <div class="li"><span class="dot" style="background:#378ADD"></span>P3 — differentiates top 10%</div>
+  <div class="li"><span class="dot" style="background:#888780"></span>P4 — good to know</div>
+  <div class="li"><span class="badge b-int">interview</span>frequently asked</div>
+  <div class="li"><span class="badge b-prod">production</span>daily craft</div>
+  <div class="li"><span class="badge b-arch">architecture</span>system design</div>
+  <div class="li"><span class="badge b-perf">perf</span>performance</div>
+</div>
+<div class="controls">
+  <button class="fb act" onclick="setF('all',this)">All</button>
+  <button class="fb" onclick="setF('p1',this)">P1 only</button>
+  <button class="fb" onclick="setF('p2',this)">P2 only</button>
+  <button class="fb" onclick="setF('int',this)">Interview hot</button>
+  <button class="fb" onclick="setF('prod',this)">Production</button>
+  <button class="fb" onclick="setF('arch',this)">Architecture</button>
+  <button class="fb" onclick="setF('perf',this)">Performance</button>
+</div>
+<div id="root"></div>
+<script>
+const T=[
+{id:1,color:"#E24B4A",label:"T1",title:"React internals — the 'why' layer",sub:"Fiber, reconciliation, rendering model",topics:[
+  {n:"Fiber architecture & work loop",p:1,tags:["interview"],d:"Work units, lanes, priority scheduling. Why render is interruptible but commit is not. How React time-slices without a worker thread.",itip:"Most asked internals question: 'What is Fiber and why does React use it?' Explain the before/after: stack reconciler vs fiber, why async rendering needed a new data structure."},
+  {n:"Reconciliation & diffing heuristics",p:1,tags:["interview"],d:"O(n) diffing assumptions: same type, same position, key semantics. What triggers re-mount vs re-render. Why keys on lists must be stable and unique.",itip:"'Why do we use keys?' is a trap — wrong answer is 'for performance'. Right answer: keys let React identify elements across renders and decide mount vs update."},
+  {n:"Render vs commit phase",p:1,tags:["interview","production"],d:"Render is pure, interruptible, may run multiple times. Commit is synchronous, has side effects, touches DOM. Hooks run in specific sub-phases.",itip:"'When does useEffect run?' requires knowing the commit phase. 'Why is setState async?' — render batching happens before commit."},
+  {n:"React's batching model",p:1,tags:["interview","production"],d:"React 18 automatic batching (all events, timeouts, promises). flushSync to opt out. Why multiple setState calls in one handler become one render.",itip:"'Why does my state update not reflect immediately?' leads here. Explain batching, then stale closure as the follow-up."},
+  {n:"Strict Mode double-invocation",p:2,tags:["interview","production"],d:"Dev-only: effects run twice, component body runs twice. Why: helps find impure renders and non-idempotent effects. Not a bug — it's a lint tool.",itip:"Candidates who don't know this assume it's a bug. Knowing it shows React 18 awareness."},
+  {n:"React Compiler (Forget)",p:3,tags:["interview"],d:"Automatic memoization via static analysis. What it can optimize (pure computations), what it can't (external mutations, non-stable refs). How it changes manual memo patterns."},
+]},
+{id:2,color:"#D85A30",label:"T2",title:"Hooks — deep & correct",sub:"Mental model, pitfalls, custom hooks",topics:[
+  {n:"useState & functional updates",p:1,tags:["interview","production"],d:"Setter with callback form (prev => ...) for safe state derived from current. Why direct value is dangerous in async handlers. Lazy initializer for expensive default.",itip:"'setState with function vs value' is asked constantly. Also: 'What happens when you call setState with the same value?' — React bails out via Object.is."},
+  {n:"useEffect — the full mental model",p:1,tags:["interview","production"],d:"Synchronize with external systems, not lifecycle hooks. Setup/cleanup symmetry. Dependency array as a contract: every reactive value must be listed.",itip:"'Explain useEffect cleanup' and 'What is the dependency array?' are top-5 interview questions. The wrong mental model (componentDidMount equivalent) causes every classic bug."},
+  {n:"Stale closures — root cause & fixes",p:1,tags:["interview","production"],d:"Effect captures values at render time. Solutions: correct deps, useRef for latest value in event handlers, useEffectEvent (React 19). The pattern behind every 'why is my state old?' bug.",itip:"Most under-estimated topic. Almost every complex React bug traces to a stale closure. Senior engineers explain the cause, not just the fix."},
+  {n:"useRef — two uses & the difference",p:1,tags:["interview","production"],d:"1) Mutable box that doesn't trigger re-render. 2) DOM node access. Why useRef is correct for setInterval IDs, event handler stable refs, and animation values.",itip:"'When would you use useRef over useState?' is frequent. Both values: mutable without re-render, and DOM access."},
+  {n:"useMemo & useCallback — cost/benefit",p:1,tags:["interview","perf"],d:"Not free: runs on every render, compares deps. Only worthwhile when: referential equality matters (child memo, effect dep), or computation is genuinely expensive. Profiler-first approach.",itip:"'Should you memoize everything?' — wrong answer is yes. Right answer: measure, then memoize. Explain when memo bailout fails (unstable deps object)."},
+  {n:"useReducer — when & why over useState",p:2,tags:["interview","production"],d:"When next state depends on multiple previous values, when actions are named/documented, when state logic needs testing in isolation. State machine use case.",itip:"'useState vs useReducer' always comes up. Answer: complexity threshold, not rule. Show understanding of the dispatch/action mental model."},
+  {n:"useContext — performance trap",p:1,tags:["interview","production"],d:"All consumers re-render when context value changes by reference. Context splitting, value memoization, using useContext with useReducer, when to prefer Zustand/Jotai instead.",itip:"'What's the problem with React Context for state?' — referential instability. Show you know the workaround and when to reach for external state."},
+  {n:"Custom hooks — architecture",p:1,tags:["interview","production","architecture"],d:"Encapsulate stateful logic (not just UI). Co-locate effect + state + cleanup. Testable independently. Examples: useDebounce, useIntersectionObserver, useLocalStorage, usePrevious.",itip:"Live coding: 'Write a useDebounce hook'. Tests: correct dep array, cleanup on unmount, stable identity of returned callback."},
+  {n:"useTransition & useDeferredValue",p:2,tags:["interview","perf"],d:"Mark updates as non-urgent. useTransition wraps the setter. useDeferredValue defers a value. Suspense integration. Practical: search inputs, tab switches, large list filters.",itip:"'How does React 18 improve performance?' — concurrent features are the answer. Show useTransition with isPending for loading states."},
+  {n:"useImperativeHandle & forwardRef",p:2,tags:["interview","production"],d:"Expose a controlled imperative API from a component. Use case: input focus, animation triggers, scroll. Avoid over-use — prefer declarative.",itip:"Asked in context of component library design. 'How would you expose a focus() method from a custom Input component?'"},
+]},
+{id:3,color:"#BA7517",label:"T3",title:"State management — full landscape",sub:"Choosing the right tool for the shape of data",topics:[
+  {n:"State taxonomy",p:1,tags:["interview","architecture"],d:"Local UI state → lifted state → global client state → server state → URL state → form state. Each has a correct home. Mixing them is the root of most complexity.",itip:"'How do you decide where to put state?' is the most common architecture question. Show the taxonomy and the decision criteria, not a list of libraries."},
+  {n:"TanStack Query — internals & patterns",p:1,tags:["interview","production"],d:"QueryClient cache, stale time vs gc time, query key design, background refetch, optimistic updates with rollback, mutation side effects, prefetching.",itip:"Server state vs client state distinction is now a mandatory concept. 'Why not just use useState + useEffect for data fetching?' leads here."},
+  {n:"Zustand — atom model & selectors",p:2,tags:["production"],d:"Single store slice pattern, selector functions to prevent over-subscription, middleware (immer, devtools, persist), combining stores."},
+  {n:"Redux Toolkit — when it's still right",p:2,tags:["interview","production"],d:"createSlice, createAsyncThunk, RTK Query, entity adapters. When RTK is justified (complex client state, time-travel debugging, large team conventions).",itip:"Many teams still use Redux. Know when it's the right call vs when it's cargo-culted."},
+  {n:"Jotai / Recoil — atomic state",p:3,tags:["architecture"],d:"Atom-based, derived atoms, async atoms, dependency graph. Fine-grained subscription means only atoms you use trigger re-renders. Comparison to Zustand."},
+  {n:"Form state — react-hook-form",p:1,tags:["production"],d:"Uncontrolled-by-default model, register pattern, watch vs getValues, validation (Zod/Yup integration), field arrays, performance over Formik.",ptip:"Production essential. react-hook-form is now the standard. Know the uncontrolled mental model vs Formik's controlled approach."},
+  {n:"URL state — router as state",p:2,tags:["production","architecture"],d:"Search params as shareable state, nuqs/next-usequerystate, keeping URL in sync with UI. Avoids duplicate state, enables deep linking and back-button correctness."},
+  {n:"Optimistic updates — pattern",p:2,tags:["interview","production"],d:"Update UI immediately, roll back on error. TanStack Query onMutate/onError/onSettled pattern. Manual optimistic cache manipulation. UX tradeoff analysis."},
+]},
+{id:4,color:"#1D9E75",label:"T4",title:"Performance engineering",sub:"Measure first, then fix",topics:[
+  {n:"Rendering bottleneck diagnosis",p:1,tags:["interview","perf","production"],d:"React DevTools Profiler: flame graph, ranked chart, why-did-you-render. Chrome Performance panel for paint/layout. Identifying unnecessary re-renders before reaching for memo.",itip:"'How do you debug a slow React app?' is a standard senior question. Answer: profile first (DevTools Profiler), identify root cause (unnecessary renders vs layout thrashing vs large bundles), then fix."},
+  {n:"Memoization strategy",p:1,tags:["interview","perf"],d:"React.memo bailout conditions: shallow equality by default. Custom comparator risks. When unstable props (inline objects/functions) defeat memo. useCallback for stable event handler identity.",itip:"'Why is my React.memo not working?' — almost always an unstable prop. Walk through the equality check."},
+  {n:"Virtualization",p:2,tags:["perf","production"],d:"TanStack Virtual (most capable), react-window (simple). DOM node budget, dynamic row heights, scroll anchoring, overscan. When to reach for it (list > ~200 items)."},
+  {n:"Code splitting & lazy loading",p:1,tags:["interview","perf"],d:"React.lazy + Suspense, dynamic import(), route-level splitting, component-level splitting for heavy libraries (charts, editors, maps).",itip:"'How do you reduce initial bundle size?' leads directly here. Know the Suspense fallback pattern and error boundary pairing."},
+  {n:"Bundle analysis",p:2,tags:["perf","production"],d:"webpack-bundle-analyzer, vite-plugin-visualizer, source-map-explorer. Identifying duplicated dependencies, large lodash/moment imports, barrel file bloat."},
+  {n:"Image & web font optimization",p:2,tags:["perf","production"],d:"next/image lazy loading + sizing, srcset/sizes, AVIF/WebP, LCP budget. font-display:swap, preload hints, variable fonts. These are the most common LCP killers."},
+  {n:"Core Web Vitals & INP",p:2,tags:["perf","production"],d:"LCP (render), INP (interaction responsiveness, replaced FID), CLS (layout shift). Diagnosing each. React-specific: hydration cost, long tasks from synchronous renders."},
+  {n:"Concurrent features for UX",p:2,tags:["perf","interview"],d:"useTransition to keep UI responsive during heavy state updates. useDeferredValue to show stale content while new content loads. Practical patterns with Suspense boundaries."},
+  {n:"React Server Components perf model",p:2,tags:["perf","architecture"],d:"Zero JS bundle cost for server components. Client component islands. How RSC changes the performance conversation: less hydration, smaller payloads."},
+]},
+{id:5,color:"#378ADD",label:"T5",title:"Architecture & patterns",sub:"System-level thinking with React",topics:[
+  {n:"Component design principles",p:1,tags:["interview","architecture"],d:"Single responsibility, open/closed (via composition), colocation of state and logic. Recognising when a component is doing too much vs prematurely splitting.",itip:"'How do you structure components in a large app?' is the most common architecture question at senior level. Show a principle, not a folder structure."},
+  {n:"Composition patterns",p:1,tags:["interview","architecture"],d:"Compound components (Menu/Menu.Item), render props (still valid for library-level inversion of control), children as functions, slot pattern via named children.",itip:"Live coding: 'Design a reusable Tabs component'. The evaluator wants to see composition, not a monolithic component with many props."},
+  {n:"Headless components — design & use",p:2,tags:["architecture","production"],d:"Radix UI, Headless UI, Ariakit. Separate behaviour/accessibility from visual. Polymorphic `as` prop. Building your own headless hooks. When to use vs build."},
+  {n:"Design system architecture",p:2,tags:["architecture","production"],d:"Design tokens (primitive → semantic → component), component API contracts, variant props (CVA), theming (CSS variables + Tailwind), Storybook-driven development, versioning."},
+  {n:"Micro-frontend patterns",p:3,tags:["architecture","interview"],d:"Module Federation for runtime composition, iframe isolation, Web Components bridge. Shared dependency deduplication, routing ownership, cross-MFE event communication.",itip:"Asked at scale companies. Know the tradeoffs: deployment independence vs complexity, shared state challenges, versioning pain."},
+  {n:"Feature flags in React",p:2,tags:["architecture","production"],d:"Flag-gated components, LaunchDarkly/Unleash SDK patterns, avoiding flag-driven prop drilling (context-based flags), cleaning up dead flags, A/B testing wiring."},
+  {n:"Error boundaries — full pattern",p:1,tags:["interview","production"],d:"Class component requirement, getDerivedStateFromError vs componentDidCatch, granular boundary placement, fallback UI design, Sentry integration, async error handling gaps.",itip:"'How do you handle errors in React?' without error boundaries is a red flag. Know where they can't catch (event handlers, async outside effects, SSR)."},
+  {n:"Suspense architecture",p:2,tags:["interview","architecture"],d:"Suspense as a coordination primitive, not just lazy loading. Waterfall prevention with parallel data fetching, Suspense boundaries for progressive disclosure, use() hook (React 19)."},
+  {n:"Portals & rendering context",p:2,tags:["production"],d:"ReactDOM.createPortal for modals/tooltips/drawers. Event bubbling still flows through React tree. Z-index and focus management implications. Accessibility considerations."},
+]},
+{id:6,color:"#534AB7",label:"T6",title:"Next.js & rendering strategies",sub:"Full-stack React in production",topics:[
+  {n:"App Router mental model",p:1,tags:["interview","production","architecture"],d:"Layouts (nested, persistent), pages, loading.tsx, error.tsx, not-found.tsx. Server vs client component boundary. Partial rendering on navigation.",itip:"'Explain the difference between App Router and Pages Router' is now a standard question. Know the architectural reason: RSC enables server-first by default."},
+  {n:"Server Components vs Client Components",p:1,tags:["interview","architecture"],d:"RSC: zero client JS, async, direct DB/fs access, no state/effects. CC: interactivity, hooks, browser APIs. 'use client' boundary placement, avoiding unnecessary client components.",itip:"'When do you add use client?' — wrong answer: always. Right: only at the leaf where interactivity starts. This is now a core senior React concept."},
+  {n:"Data fetching patterns (App Router)",p:1,tags:["interview","production"],d:"fetch() with revalidation (force-cache, no-store, next.revalidate), parallel fetching with Promise.all, sequential fetching anti-pattern, Server Actions for mutations.",itip:"'How do you fetch data in Next.js 14+?' — the answer changed completely. Server component async/await is now the default, not getServerSideProps."},
+  {n:"SSR vs SSG vs ISR vs PPR",p:1,tags:["interview","architecture"],d:"When each is correct: SSG (static, rare changes), SSR (personalized, always fresh), ISR (mostly static, occasional update), PPR (static shell + streaming dynamic slots, Next.js 14+).",itip:"Rendering strategy selection is a system design question. Show you reason from data freshness requirements and cache hit rates, not from defaults."},
+  {n:"Server Actions",p:2,tags:["interview","production"],d:"'use server' mutations, form actions, progressive enhancement, optimistic updates with useOptimistic, revalidatePath/revalidateTag cache invalidation."},
+  {n:"Caching model — Next.js 4-layer cache",p:2,tags:["interview","architecture"],d:"Request memoization → Data cache → Full Route cache → Router cache. How they compose, how to opt out, cache invalidation strategies. Common source of 'why is my data stale?' bugs."},
+  {n:"Streaming & Suspense in SSR",p:2,tags:["perf","architecture"],d:"HTML streaming with Suspense fallbacks, selective hydration, TTFB vs LCP tradeoff. Loading skeletons as Suspense boundaries. React 18 renderToPipeableStream."},
+  {n:"Middleware & edge runtime",p:3,tags:["architecture","production"],d:"next/server middleware for auth, redirects, A/B testing at the edge. Edge runtime constraints (no Node.js APIs). When middleware is the right layer vs API route."},
+]},
+{id:7,color:"#D4537E",label:"T7",title:"Testing & quality",sub:"Confidence at scale",topics:[
+  {n:"Testing philosophy — trophy model",p:1,tags:["interview","production"],d:"Integration tests give the most ROI (Kent C. Dodds trophy). Unit for pure logic, integration for user workflows, E2E for critical paths only. Avoid testing implementation details.",itip:"'How do you test React components?' — wrong answer: test every render, every state. Right: test what the user sees and does, not internals."},
+  {n:"React Testing Library — patterns",p:1,tags:["interview","production"],d:"getByRole > getByText > getByTestId hierarchy. userEvent over fireEvent. render + screen query. Async: waitFor, findBy queries. MSW for API mocking.",itip:"Know getByRole priority: it forces accessible markup. Interviewers ask 'why getByRole?' — answer is accessibility + implementation-detail resistance."},
+  {n:"MSW for API mocking",p:2,tags:["production"],d:"Service Worker intercepts, handler setup for tests and dev, network-level mocking (no axios/fetch mocking), realistic error simulation."},
+  {n:"Custom hook testing",p:2,tags:["interview","production"],d:"renderHook() from Testing Library. Testing stateful logic in isolation. Act() wrapping for state updates. When to test hooks directly vs via components."},
+  {n:"Playwright E2E — patterns",p:2,tags:["production"],d:"Page object model, waiting strategies (getByRole, locator.waitFor), API mocking (route.fulfill), visual regression, CI integration, trace viewer for debugging."},
+  {n:"Vitest for unit testing",p:2,tags:["production"],d:"Vite-native speed, vi.mock patterns, snapshot testing (sparingly), coverage configuration, watch mode in TDD workflow."},
+  {n:"Testing async behaviour",p:1,tags:["interview","production"],d:"waitFor, findBy* queries, flushing microtasks, testing loading/error/success states, testing optimistic updates, mocking timers for debounce/throttle tests.",itip:"Async testing bugs are the most common test-writing failures. Know that findByRole is waitFor(getByRole) — the composable version."},
+]},
+{id:8,color:"#444441",label:"T8",title:"Production craft & senior differentiators",sub:"What separates 10yr from 5yr",topics:[
+  {n:"Accessibility (a11y) — first-class",p:1,tags:["interview","production"],d:"ARIA roles/states/properties, keyboard navigation contract, focus management (modals, drawers, routing), live regions, axe-core in tests. Senior engineers enforce this in PR review.",itip:"'How do you handle focus when a modal opens?' is a common senior question. Know: trap focus inside, return focus on close, aria-modal attribute."},
+  {n:"TypeScript — advanced patterns",p:1,tags:["interview","production"],d:"Generic components, discriminated unions for props, conditional types, template literal types for event names, satisfies operator, strict null checks as correctness proof.",itip:"'Design a Button component with TypeScript' — evaluator looks for polymorphic as prop typing, ButtonHTMLAttributes extension, variant unions."},
+  {n:"Security — XSS in React",p:1,tags:["interview","production"],d:"dangerouslySetInnerHTML risks, DOMPurify sanitization, href injection (javascript: protocol), Trusted Types API, CSP header strategy for React apps.",itip:"Security is expected knowledge at senior level. 'Is React safe from XSS by default?' — mostly yes (JSX escaping), but explain the exceptions."},
+  {n:"Internationalisation (i18n)",p:2,tags:["production"],d:"react-i18next or next-intl, plural rules (CLDR), dynamic locale loading, RTL layout (logical CSS properties), date/number formatting via Intl API."},
+  {n:"Monorepo & workspace tooling",p:2,tags:["architecture","production"],d:"Turborepo / Nx for task caching and pipeline orchestration, pnpm workspaces, shared packages strategy, internal package publishing vs path aliases."},
+  {n:"CI/CD & deployment",p:2,tags:["production"],d:"PR preview deployments (Vercel/Netlify), Lighthouse CI in pipeline, bundle size regression checks, feature flag gating for deploys, rollback strategy."},
+  {n:"Debugging — systematic approach",p:1,tags:["interview","production"],d:"React DevTools component tree + props inspection, Profiler for render timing, browser performance panel for long tasks, network waterfall for data fetching waterfalls, heap snapshot for memory leaks.",itip:"'Walk me through debugging a slow page' is a common senior question. Show a systematic process: measure → identify → isolate → fix → verify."},
+  {n:"Trade-off communication",p:1,tags:["interview","architecture"],d:"Articulating SSR vs CSR vs RSC tradeoffs from first principles. Memoization cost vs benefit. Library selection criteria. Knowing when not to use a pattern. This is what 10yr experience actually means.",itip:"The clearest signal of seniority in an interview: the candidate asks clarifying questions and explains trade-offs before choosing a solution. Not 'use Redux' but 'it depends, here is why'."},
+  {n:"Mentoring & code review",p:2,tags:["architecture"],d:"What to enforce in PR review (correctness, accessibility, performance implications) vs what to let pass. Writing ADRs. Onboarding patterns. Documenting architectural decisions."},
+  {n:"React 19 — new primitives",p:2,tags:["interview"],d:"useOptimistic, use() for async resources, Actions (async transitions), ref as prop (no forwardRef), Server Actions as first-class. How they change existing patterns.",itip:"Knowing React 19 changes signals you track the ecosystem. Interviewers at top companies ask about this."},
+]},
+];
+
+const PTAG={p1:'p1',p2:'p2',p3:'p3',p4:'p4'};
+
+function pClass(p){return p===1?'p1':p===2?'p2':p===3?'p3':'p4'}
+function pDots(p){
+  return `<div class="prio-bar"><span class="prio-label">${p===1?'must know':p===2?'expected':p===3?'elite':'nice to have'}</span><div class="prio-dots">${[1,2,3].map(i=>`<span class="pd ${i<=p&&p<=3?'on-'+p:'off'}"></span>`).join('')}</div></div>`;
+}
+
+function render(filter){
+  const root=document.getElementById('root');
+  root.innerHTML='';
+  T.forEach(tier=>{
+    let topics=tier.topics;
+    if(filter==='p1') topics=topics.filter(t=>t.p===1);
+    else if(filter==='p2') topics=topics.filter(t=>t.p<=2);
+    else if(filter==='int') topics=topics.filter(t=>t.tags.includes('interview'));
+    else if(filter==='prod') topics=topics.filter(t=>t.tags.includes('production'));
+    else if(filter==='arch') topics=topics.filter(t=>t.tags.includes('architecture'));
+    else if(filter==='perf') topics=topics.filter(t=>t.tags.includes('perf'));
+    if(!topics.length)return;
+    const w=document.createElement('div');
+    w.className='tier-wrap';
+    w.innerHTML=`
+      <button class="tier-hd" onclick="tog(this)">
+        <span class="tdot" style="background:${tier.color}"></span>
+        <span class="tname">${tier.label} — ${tier.title}</span>
+        <span class="tmeta">${topics.length} topic${topics.length!==1?'s':''}</span>
+        <span class="chev">▶</span>
+      </button>
+      <div class="tbody">
+        <div class="grid">
+          ${topics.map(t=>`
+            <div class="card ${pClass(t.p)}" onclick="sendPrompt('Explain this React topic in depth for a 10-year senior engineer: ${t.n}')">
+              <div class="cname">
+                ${t.n}
+                ${t.tags.includes('interview')?'<span class="badge b-int">interview</span>':''}
+                ${t.tags.includes('production')?'<span class="badge b-prod">production</span>':''}
+                ${t.tags.includes('architecture')?'<span class="badge b-arch">architecture</span>':''}
+                ${t.tags.includes('perf')?'<span class="badge b-perf">perf</span>':''}
+              </div>
+              <div class="desc">${t.d}</div>
+              ${pDots(t.p)}
+              ${t.itip?`<div class="itip">Interview: ${t.itip}</div>`:''}
+              ${t.ptip?`<div class="ptip">Production: ${t.ptip}</div>`:''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    root.appendChild(w);
+  });
+}
+
+function tog(btn){
+  const b=btn.nextElementSibling;
+  const c=btn.querySelector('.chev');
+  const o=b.classList.toggle('o');
+  c.classList.toggle('o',o);
+}
+function setF(f,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  render(f);
+}
+render('all');
+</script>
