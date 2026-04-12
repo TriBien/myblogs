@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page Not Found — First Principles</title>
   <script>
-    window.location.href = 'index.html';
+    // Preserve query string when redirecting to index.html for SPA routing
+    // This ensures posts loaded via direct URL will redirect to index.html while keeping the post parameter
+    (function() {
+      var search = window.location.search;
+      var hash = window.location.hash;
+      var redirectUrl = '/' + search + hash;
+      window.location.href = redirectUrl;
+    })();
   </script>
 </head>
 <body>

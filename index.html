@@ -331,7 +331,7 @@
     }
 
     function buildUrl(slug) {
-      return slug ? `index.html?post=${slug}` : 'index.html';
+      return slug ? `reading?post=${slug}` : 'index.html';
     }
 
     function parseUrl() {
@@ -421,6 +421,8 @@
     function handleRouteChange() {
       const slug = parseUrl();
       state.slug = slug;
+
+      console.log("slug: ", slug)
       if (slug) {
         loadPost(slug);
       } else {
