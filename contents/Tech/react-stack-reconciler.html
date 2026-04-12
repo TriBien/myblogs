@@ -1,42 +1,86 @@
+<aside class="toc-sidebar" id="tocSidebar">
+  <h3>Table of Contents</h3>
+  <a href="#executive-summary" class="toc-link">Executive Summary</a>
+  <a href="#historical-context" class="toc-link">1. Historical Context</a>
+  <a href="#architecture" class="toc-link">2. Architectural Mechanics</a>
+  <a href="#performance" class="toc-link">3. Performance Characteristics</a>
+  <a href="#tradeoffs" class="toc-link">4. Pros, Cons & Trade-offs</a>
+  <a href="#evolution" class="toc-link">5. Evolution to Fiber</a>
+  <a href="#recommendations" class="toc-link"
+    >6. Architectural Recommendations</a
+  >
+</aside>
+
 <main>
-  <a href="/" class="back-link">← Back to all posts</a>
-  
-  <header class="report-header">
-    <div class="report-badge">CONFIDENTIAL • ARCHITECTURE REVIEW</div>
-    <h1>React Stack Reconciler</h1>
-    <p class="subtitle">Mechanics, Performance Characteristics, Trade-offs & Historical Context</p>
-    <div class="meta-grid">
-      <div class="meta-item">📅 <span>April 10, 2026</span></div>
-      <div class="meta-item">👤 <span>Principal Solution Architect</span></div>
-      <div class="meta-item">🏷️ <span>v1.0</span></div>
-      <div class="meta-item">🎯 <span>Senior Engineering & Platform Teams</span></div>
-    </div>
-  </header>
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <a href="#" class="back-link">← Back to all posts</a>
 
   <section id="executive-summary">
-    <h2>Executive Summary</h2>
-    <p>The Stack Reconciler was the original reconciliation engine powering React from its open-source inception (v0.14) through v15.x. It introduced a paradigm-shifting solution to the declarative UI update problem by abstracting direct DOM manipulation into a synchronous, recursive Virtual DOM diffing algorithm. While it successfully decoupled developer intent from imperative browser APIs and delivered unprecedented developer experience, its architectural constraints—chiefly synchronous main-thread blocking, call-stack recursion limits, and lack of update prioritization—ultimately necessitated its replacement by the Fiber Reconciler in React 16.</p>
-    <p>This report dissects its mechanics, evaluates its trade-offs, and positions it within modern frontend architecture.</p>
+    <h1>React Stack Reconciler</h1>
+    <p>
+      The Stack Reconciler was the original reconciliation engine powering React
+      from its open-source inception (v0.14) through v15.x. It introduced a
+      paradigm-shifting solution to the declarative UI update problem by
+      abstracting direct DOM manipulation into a synchronous, recursive Virtual
+      DOM diffing algorithm. While it successfully decoupled developer intent
+      from imperative browser APIs and delivered unprecedented developer
+      experience, its architectural constraints—chiefly synchronous main-thread
+      blocking, call-stack recursion limits, and lack of update
+      prioritization—ultimately necessitated its replacement by the Fiber
+      Reconciler in React 16.
+    </p>
+    <p>
+      This report dissects its mechanics, evaluates its trade-offs, and
+      positions it within modern frontend architecture.
+    </p>
   </section>
 
   <section id="historical-context">
     <h2>1. Historical Context & Problem Statement</h2>
     <h3>1.1 Pre-React DOM Update Landscape</h3>
-    <p>Prior to React, UI synchronization relied on manual DOM manipulation, jQuery-style event binding, custom pub/sub frameworks, and full-page re-renders. These approaches suffered from:</p>
+    <p>
+      Prior to React, UI synchronization relied on manual DOM manipulation,
+      jQuery-style event binding, custom pub/sub frameworks, and full-page
+      re-renders. These approaches suffered from:
+    </p>
     <ul>
-      <li><strong>State/View drift:</strong> Imperative updates easily desynced from application state</li>
-      <li><strong>Performance degradation:</strong> Unnecessary DOM reads/writes triggered layout thrashing</li>
-      <li><strong>Cognitive overhead:</strong> Developers manually tracked dependencies, leading to fragile code</li>
+      <li>
+        <strong>State/View drift:</strong> Imperative updates easily desynced
+        from application state
+      </li>
+      <li>
+        <strong>Performance degradation:</strong> Unnecessary DOM reads/writes
+        triggered layout thrashing
+      </li>
+      <li>
+        <strong>Cognitive overhead:</strong> Developers manually tracked
+        dependencies, leading to fragile code
+      </li>
     </ul>
 
     <h3>1.2 Core Problem React Solved</h3>
-    <blockquote>How do we guarantee UI consistency with minimal developer effort while keeping DOM operations performant?</blockquote>
+    <blockquote>
+      How do we guarantee UI consistency with minimal developer effort while
+      keeping DOM operations performant?
+    </blockquote>
     <p>The Stack Reconciler answered this by introducing:</p>
     <ol>
       <li><strong>Declarative UI Model:</strong> UI = <code>f(state)</code></li>
-      <li><strong>Virtual DOM Abstraction:</strong> Lightweight JS representation of the real DOM</li>
-      <li><strong>Deterministic Reconciliation:</strong> Automatic, optimized diffing between successive renders</li>
-      <li><strong>Batched Synchronous Commit:</strong> Minimal DOM mutations applied after full tree traversal</li>
+      <li>
+        <strong>Virtual DOM Abstraction:</strong> Lightweight JS representation
+        of the real DOM
+      </li>
+      <li>
+        <strong>Deterministic Reconciliation:</strong> Automatic, optimized
+        diffing between successive renders
+      </li>
+      <li>
+        <strong>Batched Synchronous Commit:</strong> Minimal DOM mutations
+        applied after full tree traversal
+      </li>
     </ol>
   </section>
 
@@ -44,7 +88,10 @@
     <h2>2. Architectural Design & Mechanics</h2>
     <h3>2.1 Internal Structure</h3>
     <div class="code-block">
-      <div class="code-header"><span>Virtual Node Schema</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-header">
+        <span>Virtual Node Schema</span
+        ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
       <pre><code><span class="cmt">// ReactElement (Virtual Node)</span>
 <span class="type">ReactElement</span> <span class="op">=</span> <span class="op">{</span>
   <span class="kw">type</span><span class="op">:</span> <span class="type">string</span> <span class="op">|</span> <span class="kw">function</span> <span class="cmt">// component class</span>
@@ -55,9 +102,15 @@
     </div>
 
     <h3>2.2 Recursive Tree Diffing Algorithm</h3>
-    <p>The Stack Reconciler operates synchronously using the JavaScript call stack. On state/prop changes, it triggers a depth-first traversal:</p>
+    <p>
+      The Stack Reconciler operates synchronously using the JavaScript call
+      stack. On state/prop changes, it triggers a depth-first traversal:
+    </p>
     <div class="code-block">
-      <div class="code-header"><span>Pseudo-Code: Core Reconciliation Loop</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-header">
+        <span>Pseudo-Code: Core Reconciliation Loop</span
+        ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
       <pre><code><span class="kw">function</span> <span class="fn">receiveComponent</span>(<span class="num">nextElement</span>, <span class="num">transaction</span>) <span class="op">{</span>
   <span class="kw">const</span> <span class="num">prevElement</span> <span class="op">=</span> <span class="kw">this</span>.<span class="num">_currentElement</span>;
   
@@ -82,19 +135,49 @@
     <div class="table-wrapper">
       <table>
         <thead>
-          <tr><th>Phase</th><th>Description</th><th>Thread Behavior</th></tr>
+          <tr>
+            <th>Phase</th>
+            <th>Description</th>
+            <th>Thread Behavior</th>
+          </tr>
         </thead>
         <tbody>
-          <tr><td><strong>Render Phase</strong></td><td>Recursive traversal, VDOM creation, diffing, lifecycle calls</td><td>Synchronous, blocks main thread</td></tr>
-          <tr><td><strong>Commit Phase</strong></td><td>Real DOM mutations, <code>componentDidMount</code> / <code>Update</code> execution</td><td>Synchronous, batched</td></tr>
-          <tr><td><strong>Event Handling</strong></td><td>Synthetic event delegation, state updates queue new cycles</td><td>Synchronous, re-entrant</td></tr>
+          <tr>
+            <td><strong>Render Phase</strong></td>
+            <td>
+              Recursive traversal, VDOM creation, diffing, lifecycle calls
+            </td>
+            <td>Synchronous, blocks main thread</td>
+          </tr>
+          <tr>
+            <td><strong>Commit Phase</strong></td>
+            <td>
+              Real DOM mutations, <code>componentDidMount</code> /
+              <code>Update</code> execution
+            </td>
+            <td>Synchronous, batched</td>
+          </tr>
+          <tr>
+            <td><strong>Event Handling</strong></td>
+            <td>Synthetic event delegation, state updates queue new cycles</td>
+            <td>Synchronous, re-entrant</td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <h3>2.4 Call Stack Mechanics</h3>
-    <p>Each recursive call consumes a JavaScript call stack frame. Deep component trees (<code>>1000 levels</code>) risk <code>Maximum call stack size exceeded</code> errors. The reconciliation flow follows:</p>
-    <code>render() → reconcileChildren() → updateComponent() → shouldComponentUpdate() → render(child) → reconcileChildren(grandchild) → ... → commitDOM()</code>
+    <p>
+      Each recursive call consumes a JavaScript call stack frame. Deep component
+      trees (<code>>1000 levels</code>) risk
+      <code>Maximum call stack size exceeded</code> errors. The reconciliation
+      flow follows:
+    </p>
+    <code
+      >render() → reconcileChildren() → updateComponent() →
+      shouldComponentUpdate() → render(child) → reconcileChildren(grandchild) →
+      ... → commitDOM()</code
+    >
   </section>
 
   <section id="performance">
@@ -102,15 +185,45 @@
     <div class="table-wrapper">
       <table>
         <thead>
-          <tr><th>Metric</th><th>Behavior</th><th>Impact</th></tr>
+          <tr>
+            <th>Metric</th>
+            <th>Behavior</th>
+            <th>Impact</th>
+          </tr>
         </thead>
         <tbody>
-          <tr><td>Time Complexity</td><td><code>O(n)</code> per update cycle</td><td>Predictable but scales linearly with tree size</td></tr>
-          <tr><td>Main Thread Blocking</td><td>Synchronous, non-yielding</td><td>Causes frame drops (<code>>16.67ms</code>) during heavy updates</td></tr>
-          <tr><td>Memory Allocation</td><td>Full VDOM recreation each cycle</td><td>High GC pressure in large apps</td></tr>
-          <tr><td>Interruptibility</td><td>None</td><td>Cannot pause for animations, user input, or async tasks</td></tr>
-          <tr><td>Update Prioritization</td><td>FIFO only</td><td>No concept of urgent vs deferred updates</td></tr>
-          <tr><td>Error Boundaries</td><td>Not supported</td><td>Crashes bubble up to root, ungraceful failure</td></tr>
+          <tr>
+            <td>Time Complexity</td>
+            <td><code>O(n)</code> per update cycle</td>
+            <td>Predictable but scales linearly with tree size</td>
+          </tr>
+          <tr>
+            <td>Main Thread Blocking</td>
+            <td>Synchronous, non-yielding</td>
+            <td>
+              Causes frame drops (<code>>16.67ms</code>) during heavy updates
+            </td>
+          </tr>
+          <tr>
+            <td>Memory Allocation</td>
+            <td>Full VDOM recreation each cycle</td>
+            <td>High GC pressure in large apps</td>
+          </tr>
+          <tr>
+            <td>Interruptibility</td>
+            <td>None</td>
+            <td>Cannot pause for animations, user input, or async tasks</td>
+          </tr>
+          <tr>
+            <td>Update Prioritization</td>
+            <td>FIFO only</td>
+            <td>No concept of urgent vs deferred updates</td>
+          </tr>
+          <tr>
+            <td>Error Boundaries</td>
+            <td>Not supported</td>
+            <td>Crashes bubble up to root, ungraceful failure</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -118,32 +231,94 @@
 
   <section id="tradeoffs">
     <h2>4. Pros, Cons & Architectural Trade-offs</h2>
-    
+
     <h3>✅ Strengths</h3>
     <div class="card-grid">
-      <div class="card"><span class="badge pro">Pro</span><h4>Predictable Execution</h4><p>Synchronous, deterministic updates simplify debugging and reasoning about state flow.</p></div>
-      <div class="card"><span class="badge pro">Pro</span><h4>Low Conceptual Overhead</h4><p>Developers think in component trees, not DOM APIs. <code>shouldComponentUpdate</code> provided manual escape hatches.</p></div>
-      <div class="card"><span class="badge pro">Pro</span><h4>Stable API Surface</h4><p>Lifecycle methods and reconciliation guarantees remained consistent across major minor versions.</p></div>
+      <div class="card">
+        <span class="badge pro">Pro</span>
+        <h4>Predictable Execution</h4>
+        <p>
+          Synchronous, deterministic updates simplify debugging and reasoning
+          about state flow.
+        </p>
+      </div>
+      <div class="card">
+        <span class="badge pro">Pro</span>
+        <h4>Low Conceptual Overhead</h4>
+        <p>
+          Developers think in component trees, not DOM APIs.
+          <code>shouldComponentUpdate</code> provided manual escape hatches.
+        </p>
+      </div>
+      <div class="card">
+        <span class="badge pro">Pro</span>
+        <h4>Stable API Surface</h4>
+        <p>
+          Lifecycle methods and reconciliation guarantees remained consistent
+          across major minor versions.
+        </p>
+      </div>
     </div>
 
     <h3>❌ Weaknesses</h3>
     <div class="card-grid">
-      <div class="card"><span class="badge con">Con</span><h4>Main Thread Monopolization</h4><p>Complex updates block user input and cause jank during heavy reconciliation cycles.</p></div>
-      <div class="card"><span class="badge con">Con</span><h4>No Task Splitting</h4><p>Inability to yield to <code>requestIdleCallback</code> limits responsiveness in data-heavy apps.</p></div>
-      <div class="card"><span class="badge con">Con</span><h4>Call Stack Limits</h4><p>Deep hierarchies crash the reconciler; forced flattening or pagination required.</p></div>
+      <div class="card">
+        <span class="badge con">Con</span>
+        <h4>Main Thread Monopolization</h4>
+        <p>
+          Complex updates block user input and cause jank during heavy
+          reconciliation cycles.
+        </p>
+      </div>
+      <div class="card">
+        <span class="badge con">Con</span>
+        <h4>No Task Splitting</h4>
+        <p>
+          Inability to yield to <code>requestIdleCallback</code> limits
+          responsiveness in data-heavy apps.
+        </p>
+      </div>
+      <div class="card">
+        <span class="badge con">Con</span>
+        <h4>Call Stack Limits</h4>
+        <p>
+          Deep hierarchies crash the reconciler; forced flattening or pagination
+          required.
+        </p>
+      </div>
     </div>
 
     <h3>⚖️ Trade-off Matrix</h3>
     <div class="table-wrapper">
       <table>
         <thead>
-          <tr><th>Dimension</th><th>Stack Reconciler Choice</th><th>Consequence</th></tr>
+          <tr>
+            <th>Dimension</th>
+            <th>Stack Reconciler Choice</th>
+            <th>Consequence</th>
+          </tr>
         </thead>
         <tbody>
-          <tr><td>Simplicity vs Scalability</td><td>Prioritized simplicity & determinism</td><td>Fails at scale with complex, concurrent workloads</td></tr>
-          <tr><td>Developer UX vs Runtime UX</td><td>Optimized for developer predictability</td><td>Sacrificed end-user responsiveness</td></tr>
-          <tr><td>Sync Guarantees vs Concurrency</td><td>Single-threaded, blocking execution</td><td>Incompatible with modern async rendering</td></tr>
-          <tr><td>O(n) Heuristics vs Optimal Diffing</td><td>Accepted suboptimal rebuilds for speed</td><td>Wasted CPU cycles on type-mismatch subtrees</td></tr>
+          <tr>
+            <td>Simplicity vs Scalability</td>
+            <td>Prioritized simplicity & determinism</td>
+            <td>Fails at scale with complex, concurrent workloads</td>
+          </tr>
+          <tr>
+            <td>Developer UX vs Runtime UX</td>
+            <td>Optimized for developer predictability</td>
+            <td>Sacrificed end-user responsiveness</td>
+          </tr>
+          <tr>
+            <td>Sync Guarantees vs Concurrency</td>
+            <td>Single-threaded, blocking execution</td>
+            <td>Incompatible with modern async rendering</td>
+          </tr>
+          <tr>
+            <td>O(n) Heuristics vs Optimal Diffing</td>
+            <td>Accepted suboptimal rebuilds for speed</td>
+            <td>Wasted CPU cycles on type-mismatch subtrees</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -151,128 +326,326 @@
 
   <section id="evolution">
     <h2>5. Evolution to Fiber Reconciler</h2>
-    <p>React 16 (2017) replaced the Stack Reconciler with <strong>Fiber</strong>, addressing fundamental limitations through architectural innovation:</p>
+    <p>
+      React 16 (2017) replaced the Stack Reconciler with <strong>Fiber</strong>,
+      addressing fundamental limitations through architectural innovation:
+    </p>
     <ul>
-      <li><strong>Data Structure Change:</strong> Linked-list nodes instead of recursive call stack</li>
-      <li><strong>Async & Interruptible:</strong> Pauses, resumes, and prioritizes work using the internal <code>Scheduler</code></li>
-      <li><strong>Concurrent Rendering:</strong> Time-slicing, Suspense, selective hydration</li>
-      <li><strong>Error Boundaries & Lifecycle Modernization:</strong> <code>getDerivedStateFromProps</code>, <code>componentDidCatch</code></li>
+      <li>
+        <strong>Data Structure Change:</strong> Linked-list nodes instead of
+        recursive call stack
+      </li>
+      <li>
+        <strong>Async & Interruptible:</strong> Pauses, resumes, and prioritizes
+        work using the internal <code>Scheduler</code>
+      </li>
+      <li>
+        <strong>Concurrent Rendering:</strong> Time-slicing, Suspense, selective
+        hydration
+      </li>
+      <li>
+        <strong>Error Boundaries & Lifecycle Modernization:</strong>
+        <code>getDerivedStateFromProps</code>, <code>componentDidCatch</code>
+      </li>
     </ul>
-    <p>The Stack Reconciler remains architecturally significant as the foundational proof-of-concept that declarative UI reconciliation is viable. Its constraints directly informed Fiber's design requirements.</p>
+    <p>
+      The Stack Reconciler remains architecturally significant as the
+      foundational proof-of-concept that declarative UI reconciliation is
+      viable. Its constraints directly informed Fiber's design requirements.
+    </p>
   </section>
 
   <section id="recommendations">
     <h2>6. Architectural Recommendations & Modern Relevance</h2>
     <ol>
-      <li><strong>Legacy Codebases:</strong> If maintaining React ≤15.x, enforce strict <code>shouldComponentUpdate</code>/<code>React.memo</code> patterns, limit tree depth, and virtualize long lists.</li>
-      <li><strong>Framework Design Lessons:</strong> Synchronous recursion is untenable for responsive UIs. Heuristic diffing must evolve into incremental, prioritized work units. Virtual DOM is a cache, not a silver bullet; direct compiler optimizations (Solid, Svelte) now compete.</li>
-      <li><strong>Educational Value:</strong> Understanding Stack Reconciler is mandatory for grasping why React's concurrent features exist and how reconciliation fundamentally works under the hood.</li>
+      <li>
+        <strong>Legacy Codebases:</strong> If maintaining React ≤15.x, enforce
+        strict <code>shouldComponentUpdate</code>/<code>React.memo</code>
+        patterns, limit tree depth, and virtualize long lists.
+      </li>
+      <li>
+        <strong>Framework Design Lessons:</strong> Synchronous recursion is
+        untenable for responsive UIs. Heuristic diffing must evolve into
+        incremental, prioritized work units. Virtual DOM is a cache, not a
+        silver bullet; direct compiler optimizations (Solid, Svelte) now
+        compete.
+      </li>
+      <li>
+        <strong>Educational Value:</strong> Understanding Stack Reconciler is
+        mandatory for grasping why React's concurrent features exist and how
+        reconciliation fundamentally works under the hood.
+      </li>
     </ol>
-    <blockquote>As architects, we honor foundational systems by understanding their constraints, not just their triumphs.</blockquote>
+    <blockquote>
+      As architects, we honor foundational systems by understanding their
+      constraints, not just their triumphs.
+    </blockquote>
   </section>
 
-  <footer>
-    <p>Prepared by: <strong>Principal Solution Architect</strong> | Date: <strong>April 10, 2026</strong><br>
-    Distribution: Engineering Leadership, Platform Teams, Framework Contributors</p>
-    <p style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.7;">© 2026 Internal Architecture Review. Confidential.</p>
-  </footer>
+  <script>
+    // Scripts are handled by index.html's initializePost() function
+  </script>
 </main>
 
 <style>
-  :root {
-    --bg: #0b0f19;
-    --bg-secondary: #111827;
-    --surface: #1f2937;
-    --surface-hover: #2a3444;
-    --text: #f3f4f6;
-    --text-muted: #9ca3af;
-    --text-heading: #ffffff;
-    --accent: #3b82f6;
-    --accent-soft: rgba(59, 130, 246, 0.15);
-    --accent-glow: rgba(59, 130, 246, 0.4);
-    --border: #374151;
-    --code-bg: #0d1117;
-    --code-text: #c9d1d9;
-    --success: #22c55e;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
-    --radius: 10px;
-    --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
-    --spacing: 1.5rem;
+  
+  header.report-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: var(--font-sans);
-    background: var(--bg);
+  .report-badge {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+  }
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text-heading);
+    margin-bottom: 0.5rem;
+  }
+  header .subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+  .meta-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .meta-item span {
+    font-weight: 500;
     color: var(--text);
-    line-height: 1.7;
-    font-size: 1.05rem;
   }
+
+  section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 80px;
+  }
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+  }
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-heading);
+    margin: 1.5rem 0 0.75rem;
+  }
+  p {
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+  strong {
+    color: var(--text-heading);
+  }
+  ul,
+  ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  blockquote {
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-style: italic;
+    color: var(--text);
+  }
+
+  /* Tables */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--bg-secondary);
+    font-weight: 600;
+    color: var(--text-heading);
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+  tr:hover td {
+    background: var(--surface-hover);
+  }
+
+  /* Code Blocks */
   .code-block {
-    background: var(--code-bg); border-radius: var(--radius); padding: 1.25rem;
-    margin: 1.5rem 0; position: relative; overflow-x: auto; border: 1px solid var(--border);
+    background: var(--code-bg);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow-x: auto;
+    border: 1px solid var(--border);
   }
   .code-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border);
-    font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
   }
   .copy-btn {
-    background: transparent; border: 1px solid var(--border); color: var(--text-muted);
-    padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.7rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.7rem;
     transition: all 0.2s;
   }
-  .copy-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
-  pre { margin: 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--code-text); line-height: 1.5; }
-  code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
-  pre code { background: transparent; padding: 0; font-size: 0.9rem; }
-  .kw { color: #c678dd; } .fn { color: #61afef; } .str { color: #98c379; }
-  .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; }
-  .op { color: #56b6c2; } .type { color: #e5c07b; }
-  header.report-header { margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-  .report-badge { display: inline-block; background: var(--accent-soft); color: var(--accent); padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 0.75rem; }
-  header h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; color: var(--text-heading); margin-bottom: 0.5rem; }
-  header .subtitle { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 1rem; }
-  .meta-grid { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
-  .meta-item { display: flex; align-items: center; gap: 0.4rem; }
-  .meta-item span { font-weight: 500; color: var(--text); }
-  section { margin-bottom: 3rem; scroll-margin-top: 80px; }
-  h2 { font-size: 1.6rem; font-weight: 700; color: var(--text-heading); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
-  h3 { font-size: 1.25rem; font-weight: 600; color: var(--text-heading); margin: 1.5rem 0 0.75rem; }
-  p { margin-bottom: 1rem; color: var(--text); }
-  strong { color: var(--text-heading); }
-  ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
-  li { margin-bottom: 0.5rem; }
-  blockquote { background: var(--surface); border-left: 4px solid var(--accent); padding: 1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 var(--radius) var(--radius) 0; font-style: italic; color: var(--text); }
-  .table-wrapper { overflow-x: auto; margin: 1.5rem 0; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); }
-  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-  th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
-  th { background: var(--bg-secondary); font-weight: 600; color: var(--text-heading); }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--surface-hover); }
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; transition: transform 0.2s, box-shadow 0.2s; }
-  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-  .card h4 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1rem; }
-  .badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; margin-right: 0.5rem; }
-  .badge.pro { background: rgba(34, 197, 94, 0.15); color: var(--success); }
-  .badge.con { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-  footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.85rem; }
-  @media (max-width: 900px) { header h1 { font-size: 1.8rem; } h2 { font-size: 1.4rem; } .card-grid { grid-template-columns: 1fr; } }
-</style>
+  .copy-btn:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  pre {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--code-text);
+    line-height: 1.5;
+  }
+  code {
+    font-family: var(--font-mono);
+    background: var(--code-bg);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 0.9rem;
+  }
 
-<script>
-  window.copyCode = function(btn) {
-    const pre = btn.parentElement.nextElementSibling;
-    const code = pre.innerText;
-    navigator.clipboard.writeText(code).then(() => {
-      const original = btn.textContent;
-      btn.textContent = 'Copied!';
-      btn.style.color = 'var(--success)';
-      setTimeout(() => { btn.textContent = original; btn.style.color = ''; }, 2000);
-    });
-  };
-</script>
+  /* Syntax Highlighting (Manual CSS) */
+  .kw {
+    color: #c678dd;
+  }
+  .fn {
+    color: #61afef;
+  }
+  .str {
+    color: #98c379;
+  }
+  .cmt {
+    color: #5c6370;
+    font-style: italic;
+  }
+  .num {
+    color: #d19a66;
+  }
+  .op {
+    color: #56b6c2;
+  }
+  .type {
+    color: #e5c07b;
+  }
+  [data-theme="light"] .kw {
+    color: #8b5cf6;
+  }
+  [data-theme="light"] .fn {
+    color: #2563eb;
+  }
+  [data-theme="light"] .str {
+    color: #16a34a;
+  }
+  [data-theme="light"] .cmt {
+    color: #64748b;
+  }
+
+  /* Cards & Badges */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .card h4 {
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+  .badge.pro {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--success);
+  }
+  .badge.con {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+  }
+  .badge.warn {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+  }
+</style>
